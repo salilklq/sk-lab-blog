@@ -307,11 +307,19 @@ function renderLatestSignal(content) {
 function renderAcgMediaCard(article) {
   const firstMedia = article.media?.[0];
   const mediaLabel = firstMedia?.type === "video" ? "VIDEO" : firstMedia ? "IMAGE" : "TEXT";
+  const mediaUrl = firstMedia?.url ? escapeHtml(firstMedia.url) : "";
+  const mediaAlt = escapeHtml(firstMedia?.alt || firstMedia?.name || article.title);
+  const preview = firstMedia?.type === "image"
+    ? `<img src="${mediaUrl}" alt="${mediaAlt}" loading="lazy" />`
+    : firstMedia?.type === "video"
+      ? `<video src="${mediaUrl}#t=0.1" preload="metadata" muted playsinline></video>`
+      : `<span>${mediaLabel}</span>`;
 
   return `
     <a class="acg-archive-card" href="article.html?slug=${encodeURIComponent(article.slug)}">
       <div class="archive-preview ${firstMedia?.type === "video" ? "is-video" : ""}">
-        ${firstMedia?.type === "image" ? `<img src="${escapeHtml(firstMedia.url)}" alt="${escapeHtml(firstMedia.alt || firstMedia.name || article.title)}" loading="lazy" />` : `<span>${mediaLabel}</span>`}
+        ${preview}
+        ${firstMedia ? `<small>${mediaLabel}</small>` : ""}
       </div>
       <div class="archive-info">
         <time datetime="${escapeHtml(article.date)}">${escapeHtml(article.displayDate)}</time>
