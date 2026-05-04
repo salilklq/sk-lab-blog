@@ -239,6 +239,46 @@ function renderArticleCard(article) {
   `;
 }
 
+function renderArticleCommand(article, index = 0) {
+  const hasMedia = Boolean(article.media?.length);
+  return `
+    <a class="article-command-item ${index === 0 ? "is-active" : ""}" href="article.html?slug=${encodeURIComponent(article.slug)}">
+      <span>${String(index + 1).padStart(2, "0")}</span>
+      <div>
+        <strong>${escapeHtml(article.title)}</strong>
+        <em>${escapeHtml(article.category)} / ${escapeHtml(article.displayDate)}</em>
+      </div>
+      ${hasMedia ? `<small>${article.media[0].type === "video" ? "VIDEO" : "IMAGE"}</small>` : ""}
+    </a>
+  `;
+}
+
+function renderArticleCommandCenter(articles) {
+  if (!articles.length) {
+    return `<div class="empty-state glass-card reveal"><span class="empty-code">NO SIGNAL CAPTURED</span><h3>暂无开发笔记</h3><p>管理员发布“SK 的开发笔记”后会显示在这里。</p></div>`;
+  }
+
+  const featured = articles[0];
+  const list = articles.map(renderArticleCommand).join("");
+  return `
+    <article class="featured-article-card glass-card reveal" data-tilt>
+      <span class="feature-kicker">LATEST NOTE</span>
+      <h3>${escapeHtml(featured.title)}</h3>
+      <p>${escapeHtml(featured.summary)}</p>
+      <div class="feature-meta">
+        <span>${escapeHtml(featured.category)}</span>
+        <time datetime="${escapeHtml(featured.date)}">${escapeHtml(featured.displayDate)}</time>
+      </div>
+      ${featured.media?.[0] ? `<div class="card-media-preview">${featured.media[0].type === "video" ? "VIDEO" : "IMAGE"}</div>` : ""}
+      <a class="inline-link" href="article.html?slug=${encodeURIComponent(featured.slug)}">打开实验记录</a>
+    </article>
+    <div class="article-command-list glass-card reveal">
+      <div class="command-list-head"><span>NOTE INDEX</span><strong>${articles.length}</strong></div>
+      ${list}
+    </div>
+  `;
+}
+
 function updateSiteShell(content) {
   setAllText("[data-site-brand]", content.site.brand);
   setAllText("[data-site-footer]", content.site.footer);
@@ -249,12 +289,22 @@ function renderHome(content) {
   updateSiteShell(content);
 
   setText("[data-hero-eyebrow]", content.hero.eyebrow);
-  setText("[data-hero-title]", content.hero.title);
   setText("[data-hero-copy]", content.hero.copy);
   setText("[data-identity-title]", content.hero.identityTitle);
   setText("[data-identity-subtitle]", content.hero.identitySubtitle);
   setText("[data-terminal-name]", content.hero.terminalName);
   setText("[data-terminal-status]", content.hero.terminalStatus);
+
+  const consoleReadout = document.querySelector("[data-console-readout]");
+  if (consoleReadout) {
+    const latest = (content.latestUpdates || []).find((item) => item.type === "article");
+    consoleReadout.innerHTML = `
+      <div><span>ARTICLES</span><strong>${escapeHtml(String(content.articles.length))}</strong></div>
+      <div><span>PROJECTS</span><strong>${escapeHtml(String(content.projects.length))}</strong></div>
+      <div><span>ACCESS</span><strong>PRIVATE</strong></div>
+      <div><span>LAST UPDATE</span><strong>${escapeHtml(latest?.displayDate || "WAITING")}</strong></div>
+    `;
+  }
 
   const metrics = document.querySelector("[data-metrics]");
   if (metrics) {
@@ -278,9 +328,7 @@ function renderHome(content) {
   const articleGrid = document.querySelector("[data-article-grid]");
   if (articleGrid) {
     const devArticles = content.articles.filter((article) => article.section === "dev");
-    articleGrid.innerHTML = devArticles.length
-      ? devArticles.map(renderArticleCard).join("")
-      : `<div class="empty-state glass-card reveal"><span class="empty-code">DEV_ARTICLE_COUNT = 0</span><h3>暂无开发笔记</h3><p>管理员发布“SK 的开发笔记”后会显示在这里。</p></div>`;
+    articleGrid.innerHTML = renderArticleCommandCenter(devArticles);
   }
 
   setText("[data-projects-eyebrow]", content.projectsIntro.eyebrow);

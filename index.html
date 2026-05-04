@@ -47,47 +47,69 @@
   </header>
 
   <main>
-    <section class="hero section" id="home">
+    <section class="hero section lab-hero" id="home">
       <div class="hero-grid" aria-hidden="true"></div>
       <div class="hero-content reveal">
         <p class="eyebrow"><span></span> <span data-hero-eyebrow>SK Embedded / Cyber Blog</span></p>
-        <h1 data-hero-title>你好，我是 SK。用代码把硬件点亮。</h1>
+        <h1><span>SK Lab</span><small>// Embedded × Game × Anime</small></h1>
         <p class="hero-copy" data-hero-copy>嵌入式开发者的个人空间，目前正在搭建中。这里未来会记录 MCU、驱动、调试、个人项目，也会收藏游戏和动漫带来的灵感。</p>
         <div class="hero-actions">
-          <a class="primary-btn" href="#articles">开始阅读</a>
-          <a class="ghost-btn" href="#projects">查看项目</a>
+          <a class="primary-btn" href="#console">进入控制台</a>
+          <a class="ghost-btn" href="#interests">查看收藏频道</a>
         </div>
-        <div class="metric-row" data-metrics aria-label="真实站点状态"></div>
+        <div class="lab-tags" data-tags aria-label="关注方向"></div>
       </div>
 
-      <aside class="hero-panel glass-card reveal" data-tilt>
+      <aside class="hero-panel lab-console glass-card reveal" data-tilt>
         <div class="panel-top">
           <span class="status-dot"></span>
-          <span>SK SIGNAL</span>
+          <span>PRIVATE LAB ONLINE</span>
         </div>
-        <div class="identity-card">
-          <div class="avatar-core">SK</div>
-          <div>
-            <strong data-identity-title>Embedded Developer</strong>
-            <span data-identity-subtitle>Personal Use / Game / Anime</span>
+        <div class="console-core">
+          <div class="console-mark">SK</div>
+          <div class="wave-monitor" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
           </div>
         </div>
-        <div class="orbit-widget">
-          <span class="planet"></span>
-          <span class="ring ring-one"></span>
-          <span class="ring ring-two"></span>
-          <span class="satellite"></span>
-        </div>
+        <div class="console-readout" data-console-readout></div>
         <div class="terminal-card">
           <p><span>$</span> whoami</p>
           <p data-terminal-name>sk / embedded developer</p>
-          <p><span>$</span> site_status</p>
-          <p class="typing-line" data-terminal-status>First article published, more coming soon</p>
+          <p><span>$</span> boot_signal</p>
+          <p class="typing-line" data-terminal-status>Admin publishing is enabled</p>
         </div>
       </aside>
     </section>
 
-    <section class="section strip reveal" data-tags aria-label="关注方向"></section>
+    <section class="section command-section" id="console">
+      <div class="section-heading reveal">
+        <p class="eyebrow"><span></span> Command Deck</p>
+        <h2>选择一个频道进入 SK 的私人实验室。</h2>
+        <p>开发笔记、项目实验室、游戏与动漫收藏不再挤在一起，而是作为三个独立入口进入不同内容区。</p>
+      </div>
+      <div class="channel-grid reveal">
+        <a class="channel-card embedded-channel" href="#articles" data-tilt>
+          <span>01 / MCU</span>
+          <h3>Embedded Notes</h3>
+          <p>驱动、调试、固件、硬件排障记录。</p>
+        </a>
+        <a class="channel-card project-channel" href="#projects" data-tilt>
+          <span>02 / BUILD</span>
+          <h3>Project Lab</h3>
+          <p>个人工具、硬件实验、想法原型。</p>
+        </a>
+        <a class="channel-card acg-channel" href="#interests" data-tilt>
+          <span>03 / ARCHIVE</span>
+          <h3>Game & Anime</h3>
+          <p>游戏灵感、动漫收藏、个人装备档案。</p>
+        </a>
+      </div>
+    </section>
 
     <section class="section" id="articles">
       <div class="section-heading reveal">
@@ -95,7 +117,7 @@
         <h2 data-articles-title>SK 的开发笔记</h2>
         <p data-articles-copy>这里展示 SK 已经公开发布的真实文章，不展示虚构阅读量。</p>
       </div>
-      <div class="article-grid" data-article-grid></div>
+      <div class="article-command-layout" data-article-grid></div>
     </section>
 
     <section class="section lab-section" id="projects">
@@ -107,7 +129,7 @@
       <div class="project-layout" data-project-grid></div>
     </section>
 
-    <section class="section timeline-section" id="timeline">
+    <section class="section timeline-section command-log-section" id="timeline">
       <div class="section-heading reveal">
         <p class="eyebrow"><span></span> <span data-timeline-eyebrow>Real Status</span></p>
         <h2 data-timeline-title>当前状态</h2>
