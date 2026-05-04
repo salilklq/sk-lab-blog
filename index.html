@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="SK 的个人博客，当前正在搭建中，未来会记录嵌入式开发、个人项目、游戏和动漫灵感。" />
+  <meta name="theme-color" content="#050713" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="SK Lab | 嵌入式开发个人博客" />
+  <meta property="og:description" content="SK 的个人博客，记录嵌入式开发、个人项目、游戏和动漫灵感。" />
+  <meta property="og:image" content="og.svg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="manifest" href="site.webmanifest" />
+  <title>SK Lab | 嵌入式开发个人博客</title>
+  <script type="module" src="/src/main.js"></script>
+</head>
+<body>
+  <canvas id="particle-canvas" aria-hidden="true"></canvas>
+  <div class="aurora aurora-one" aria-hidden="true"></div>
+  <div class="aurora aurora-two" aria-hidden="true"></div>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="scanline" aria-hidden="true"></div>
+  <div class="cursor-orb" aria-hidden="true"></div>
+  <div class="reading-progress" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <nav class="nav-shell" aria-label="主导航">
+      <a class="brand" href="#home" aria-label="返回首页">
+        <span class="brand-mark"></span>
+        <span>SK Lab</span>
+      </a>
+      <button class="menu-toggle" type="button" aria-label="打开菜单" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <div class="nav-links">
+        <a href="#articles">文章</a>
+        <a href="#projects">项目</a>
+        <a href="#timeline">足迹</a>
+        <a href="#interests">兴趣</a>
+        <a href="#about">关于</a>
+      </div>
+      <a class="nav-cta" href="mailto:sxypgnuq@outlook.com">联系我</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero section" id="home">
+      <div class="hero-grid" aria-hidden="true"></div>
+      <div class="hero-content reveal">
+        <p class="eyebrow"><span></span> SK Embedded / Cyber Blog</p>
+        <h1>你好，我是 SK。用代码把硬件点亮。</h1>
+        <p class="hero-copy">嵌入式开发者的个人空间，目前正在搭建中。这里未来会记录 MCU、驱动、调试、个人项目，也会收藏游戏和动漫带来的灵感。</p>
+        <div class="hero-actions">
+          <a class="primary-btn" href="#articles">开始阅读</a>
+          <a class="ghost-btn" href="#projects">查看项目</a>
+        </div>
+        <div class="metric-row" aria-label="真实站点状态">
+          <div>
+            <strong>0</strong>
+            <span>已发布文章</span>
+          </div>
+          <div>
+            <strong>0</strong>
+            <span>公开项目</span>
+          </div>
+          <div>
+            <strong>未接入</strong>
+            <span>访问统计</span>
+          </div>
+        </div>
+      </div>
+
+      <aside class="hero-panel glass-card reveal" data-tilt>
+        <div class="panel-top">
+          <span class="status-dot"></span>
+          <span>SK SIGNAL</span>
+        </div>
+        <div class="identity-card">
+          <div class="avatar-core">SK</div>
+          <div>
+            <strong>Embedded Developer</strong>
+            <span>Personal Use / Game / Anime</span>
+          </div>
+        </div>
+        <div class="orbit-widget">
+          <span class="planet"></span>
+          <span class="ring ring-one"></span>
+          <span class="ring ring-two"></span>
+          <span class="satellite"></span>
+        </div>
+        <div class="terminal-card">
+          <p><span>$</span> whoami</p>
+          <p>sk / embedded developer</p>
+          <p><span>$</span> site_status</p>
+          <p class="typing-line">Building in public, content coming soon</p>
+        </div>
+      </aside>
+    </section>
+
+    <section class="section strip reveal" aria-label="关注方向">
+      <span>Embedded Systems</span>
+      <span>MCU Firmware</span>
+      <span>Hardware Debug</span>
+      <span>Personal Tools</span>
+      <span>Game & Anime</span>
+    </section>
+
+    <section class="section" id="articles">
+      <div class="section-heading reveal">
+        <p class="eyebrow"><span></span> Embedded Notes</p>
+        <h2>SK 的开发笔记</h2>
+        <p>当前还没有发布文章。这里先保留真实空状态，等你写第一篇内容后再正式展示。</p>
+      </div>
+      <div class="empty-state glass-card reveal">
+        <span class="empty-code">ARTICLE_COUNT = 0</span>
+        <h3>暂无公开文章</h3>
+        <p>第一篇文章发布前，这里不会伪造文章、日期或阅读量。计划更新方向：嵌入式调试记录、MCU 学习笔记、个人工具复盘。</p>
+        <a href="mailto:sxypgnuq@outlook.com">联系 SK</a>
+      </div>
+    </section>
+
+    <section class="section lab-section" id="projects">
+      <div class="section-heading reveal">
+        <p class="eyebrow"><span></span> Project Lab</p>
+        <h2>SK 的项目实验室</h2>
+        <p>当前还没有公开发布的项目。下面是计划方向，不代表已经完成上线。</p>
+      </div>
+      <div class="project-layout">
+        <article class="project-card feature-project reveal" data-tilt>
+          <span class="project-index">PLAN</span>
+          <h3>Personal Control Terminal</h3>
+          <p>计划中的个人控制终端：连接硬件状态、串口日志、提醒事项和个人数据。当前状态：尚未公开发布。</p>
+          <div class="tech-stack">
+            <span>MCU</span>
+            <span>UART</span>
+            <span>Planned</span>
+          </div>
+        </article>
+        <article class="project-card reveal" data-tilt>
+          <span class="project-index">TODO</span>
+          <h3>Debug Archive</h3>
+          <p>计划把烧录失败、串口异常、通信错误等问题整理成自己的排错数据库。</p>
+        </article>
+        <article class="project-card reveal" data-tilt>
+          <span class="project-index">TODO</span>
+          <h3>ACG Inspiration Vault</h3>
+          <p>计划收集游戏 UI、动漫设定和酷炫交互，为个人项目提供灵感库。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section timeline-section" id="timeline">
+      <div class="section-heading reveal">
+        <p class="eyebrow"><span></span> Real Status</p>
+        <h2>当前状态</h2>
+      </div>
+      <div class="timeline">
+        <div class="timeline-item reveal">
+          <span>现在</span>
+          <h3>网站正在搭建</h3>
+          <p>当前目标是先把 SK 的个人主页按公网发布标准做好。</p>
+        </div>
+        <div class="timeline-item reveal">
+          <span>真实数据</span>
+          <h3>文章为 0，访问统计未接入</h3>
+          <p>在正式发布文章和接入统计前，不展示虚构阅读量、虚构日期和虚构内容。</p>
+        </div>
+        <div class="timeline-item reveal">
+          <span>下一步</span>
+          <h3>发布第一篇内容</h3>
+          <p>后续可以从嵌入式学习笔记、调试记录或游戏动漫灵感开始更新。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section interests-section" id="interests">
+      <div class="section-heading reveal">
+        <p class="eyebrow"><span></span> Personal Channel</p>
+        <h2>游戏与动漫频道</h2>
+        <p>这里不是工作简历，而是 SK 的个人宇宙。硬件负责运行，游戏和动漫负责点燃想象。</p>
+      </div>
+      <div class="interest-grid">
+        <article class="interest-card reveal" data-tilt>
+          <span class="interest-icon">GAME</span>
+          <h3>游戏灵感</h3>
+          <p>关注 HUD、装备系统、状态反馈和沉浸式交互，把这些设计语言迁移到个人工具里。</p>
+        </article>
+        <article class="interest-card reveal" data-tilt>
+          <span class="interest-icon">ANIME</span>
+          <h3>动漫收藏</h3>
+          <p>记录喜欢的角色、场景、台词和视觉风格，构建属于自己的 ACG 灵感档案。</p>
+        </article>
+        <article class="interest-card reveal" data-tilt>
+          <span class="interest-icon">DIY</span>
+          <h3>个人装备</h3>
+          <p>未来可以放键盘、开发板、桌面设备、调试工具和一切让自己更顺手的装备。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section about-section" id="about">
+      <div class="about-card glass-card reveal">
+        <div>
+          <p class="eyebrow"><span></span> About SK</p>
+          <h2>嵌入式开发，是我连接代码与现实世界的方式。</h2>
+          <p>我是 SK，关注嵌入式开发和个人工具构建。这个博客会记录我的学习笔记、项目想法、硬件调试经验，也会保留游戏和动漫相关的个人兴趣。</p>
+        </div>
+        <div class="profile-chip-list" aria-label="个人标签">
+          <span>嵌入式开发</span>
+          <span>个人项目</span>
+          <span>游戏</span>
+          <span>动漫</span>
+          <span>SK</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>© 2026 SK Lab. Embedded notes, games and anime sparks.</p>
+    <div>
+      <a href="#home">Back to top</a>
+      <a href="mailto:sxypgnuq@outlook.com">Email</a>
+    </div>
+  </footer>
+</body>
+</html>

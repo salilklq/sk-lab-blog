@@ -1,0 +1,16 @@
+{
+  "name": "SK Lab",
+  "short_name": "SK Lab",
+  "description": "SK 的嵌入式开发个人博客。",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#050713",
+  "theme_color": "#050713",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
