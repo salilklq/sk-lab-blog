@@ -19,176 +19,225 @@
 
   <main class="admin-shell">
     <section class="admin-hero glass-card">
-      <p class="eyebrow"><span></span> Admin Publish Mode</p>
-      <h1>选择板块，然后新增内容。</h1>
-      <p>三个区域严格隔离。选择开发笔记只显示文章表单；选择项目实验室只显示项目表单；选择游戏与动漫频道只显示该频道文章表单和子板块选择。</p>
+      <div class="admin-hero-copy">
+        <p class="eyebrow"><span></span> SK Lab Admin Console</p>
+        <h1>内容后台</h1>
+        <p>按“连接仓库、选择区域、编辑内容、上传媒体、发布”的顺序操作。开发笔记、项目实验室、游戏与动漫频道保持独立，避免内容混发。</p>
+      </div>
       <div class="admin-links">
         <a href="../index.html">返回网站</a>
         <a href="https://github.com/settings/tokens?type=beta" target="_blank" rel="noreferrer">创建 GitHub Token</a>
       </div>
     </section>
 
-    <section class="admin-panel glass-card">
-      <div class="admin-section-heading">
-        <h2>发布权限</h2>
-        <p>如果保存时报 `Resource not accessible by personal access token`，说明 Token 没有授权到这个仓库，或没有 Contents: Read and write 权限。请重新生成 Fine-grained Token。</p>
+    <section class="admin-metrics glass-card" aria-label="后台统计">
+      <div class="admin-metric-card">
+        <span>文章</span>
+        <strong id="adminArticleCount">0</strong>
       </div>
-      <div class="admin-form-grid">
-        <label>
-          GitHub Token
-          <input id="tokenInput" type="password" autocomplete="off" placeholder="github_pat_..." />
-        </label>
-        <label>
-          提交说明
-          <input id="commitMessage" type="text" value="Publish new content from admin" />
-        </label>
+      <div class="admin-metric-card">
+        <span>项目</span>
+        <strong id="adminProjectCount">0</strong>
       </div>
-      <div class="admin-actions">
-        <button id="loadRemote" type="button">重新加载线上内容</button>
-        <button id="publishContent" type="button">发布新增内容</button>
-        <button id="clearToken" type="button" class="danger-btn">清除 Token</button>
+      <div class="admin-metric-card">
+        <span>已引用媒体</span>
+        <strong id="adminMediaCount">0</strong>
       </div>
-      <p id="adminStatus" class="admin-status">等待操作。</p>
-    </section>
-
-    <section class="admin-panel glass-card">
-      <div class="admin-section-heading">
-        <h2>选择发布区域</h2>
-        <p>选择后，下方只显示当前区域可以新增的内容。</p>
-      </div>
-      <div class="publish-type-grid" role="radiogroup" aria-label="发布类型">
-        <label class="publish-type-card">
-          <input type="radio" name="publishType" value="dev" checked />
-          <strong>SK 的开发笔记</strong>
-          <span>只发布嵌入式、调试、学习笔记文章。</span>
-        </label>
-        <label class="publish-type-card">
-          <input type="radio" name="publishType" value="project" />
-          <strong>SK 的项目实验室</strong>
-          <span>只发布个人项目、硬件实验、工具作品。</span>
-        </label>
-        <label class="publish-type-card">
-          <input type="radio" name="publishType" value="acg" />
-          <strong>游戏与动漫频道</strong>
-          <span>只发布游戏、动漫、个人装备文章。</span>
-        </label>
+      <div class="admin-metric-card">
+        <span>待上传</span>
+        <strong id="adminDraftMediaCount">0</strong>
       </div>
     </section>
 
-    <section id="articlePanel" class="admin-panel glass-card" data-panel="article">
-      <div class="admin-section-heading">
-        <h2 id="articlePanelTitle">新增开发笔记</h2>
-        <p id="articlePanelHelp">内容会发布到 SK 的开发笔记区域。</p>
-      </div>
-      <div id="acgSubsectionWrap" class="admin-form-grid compact-grid" hidden>
-        <label>
-          游戏与动漫子板块
-          <select id="acgSubsection">
-            <option value="game">游戏灵感</option>
-            <option value="anime">动漫收藏</option>
-            <option value="gear">个人装备</option>
-          </select>
-        </label>
-      </div>
-      <div class="admin-form-grid">
-        <label>
-          Slug
-          <input id="articleSlug" type="text" placeholder="my-first-post" />
-        </label>
-        <label>
-          分类
-          <input id="articleCategory" type="text" placeholder="嵌入式开发" />
-        </label>
-        <label class="wide-field">
-          标题
-          <input id="articleTitle" type="text" />
-        </label>
-        <label class="wide-field">
-          摘要
-          <textarea id="articleSummary" rows="4"></textarea>
-        </label>
-        <label class="wide-field">
-          正文
-          <textarea id="articleContent" class="large-editor" rows="22"></textarea>
-        </label>
-      </div>
-    </section>
+    <div class="admin-layout">
+      <aside class="admin-sidebar">
+        <section class="admin-panel glass-card admin-sticky-panel">
+          <div class="admin-section-heading compact-heading">
+            <span class="section-kicker">01 Repository</span>
+            <h2>连接仓库</h2>
+            <p>Token 只保存在当前浏览器。需要授权 `Contents: Read and write`。</p>
+          </div>
+          <div class="admin-form-grid single-grid">
+            <label>
+              GitHub Token
+              <input id="tokenInput" type="password" autocomplete="off" placeholder="github_pat_..." />
+            </label>
+            <label>
+              提交说明
+              <input id="commitMessage" type="text" value="Publish new content from admin" />
+            </label>
+          </div>
+          <div class="admin-actions stacked-actions">
+            <button id="loadRemote" type="button">重新加载线上内容</button>
+            <button id="publishContent" type="button">发布新增内容</button>
+            <button id="clearToken" type="button" class="danger-btn">清除 Token</button>
+          </div>
+          <p id="adminStatus" class="admin-status">等待操作。</p>
+        </section>
 
-    <section id="projectPanel" class="admin-panel glass-card" data-panel="project" hidden>
-      <div class="admin-section-heading">
-        <h2>新增项目</h2>
-        <p>内容只会发布到 SK 的项目实验室区域。</p>
-      </div>
-      <div class="admin-form-grid">
-        <label>
-          项目编号
-          <input id="projectIndex" type="text" placeholder="01 / PLAN / TODO" />
-        </label>
-        <label>
-          技术标签
-          <input id="projectTags" type="text" placeholder="MCU, UART, STM32" />
-        </label>
-        <label class="wide-field">
-          项目标题
-          <input id="projectTitle" type="text" />
-        </label>
-        <label class="wide-field">
-          项目介绍
-          <textarea id="projectCopy" class="large-editor" rows="16"></textarea>
-        </label>
-      </div>
-    </section>
+        <section class="admin-panel glass-card">
+          <div class="admin-section-heading compact-heading">
+            <span class="section-kicker">Tools</span>
+            <h2>媒体清理</h2>
+            <p>删除没有被任何文章或项目引用的图片/视频文件。</p>
+          </div>
+          <div class="admin-actions stacked-actions">
+            <button id="cleanupMedia" type="button" class="danger-btn">清理无引用媒体</button>
+          </div>
+        </section>
+      </aside>
 
-    <section class="admin-panel glass-card">
-      <div class="admin-section-heading">
-        <h2>上传图片或视频</h2>
-        <p>可选。媒体会上传到当前内容的专属目录，并自动显示在对应文章或项目中。</p>
-      </div>
-      <label class="media-upload-box">
-        <input id="mediaInput" type="file" accept="image/*,video/*" multiple />
-        <span>选择图片或视频文件</span>
-      </label>
-      <div id="mediaPreview" class="admin-media-preview"></div>
-    </section>
+      <div class="admin-main">
+        <section class="admin-panel glass-card">
+          <div class="admin-section-heading">
+            <span class="section-kicker">02 Channel</span>
+            <h2>选择发布区域</h2>
+            <p>先选择内容要发布到哪里，下方表单会自动切换。</p>
+          </div>
+          <div class="publish-type-grid" role="radiogroup" aria-label="发布类型">
+            <label class="publish-type-card">
+              <input type="radio" name="publishType" value="dev" checked />
+              <strong>SK 的开发笔记</strong>
+              <span>嵌入式、调试、学习笔记。</span>
+            </label>
+            <label class="publish-type-card">
+              <input type="radio" name="publishType" value="project" />
+              <strong>SK 的项目实验室</strong>
+              <span>个人项目、硬件实验、工具作品。</span>
+            </label>
+            <label class="publish-type-card">
+              <input type="radio" name="publishType" value="acg" />
+              <strong>游戏与动漫频道</strong>
+              <span>游戏、动漫、个人装备文章。</span>
+            </label>
+          </div>
+        </section>
 
-    <section class="admin-panel glass-card">
-      <div class="admin-section-heading">
-        <h2>管理已发布文章</h2>
-        <p>选择一篇已发布文章，可以修改标题、分类、正文和所属板块，也可以删除文章及其媒体文件。</p>
+        <section id="articlePanel" class="admin-panel glass-card" data-panel="article">
+          <div class="admin-section-heading">
+            <span class="section-kicker">03 Editor</span>
+            <h2 id="articlePanelTitle">新增开发笔记</h2>
+            <p id="articlePanelHelp">内容会发布到 SK 的开发笔记区域。</p>
+          </div>
+          <div id="acgSubsectionWrap" class="admin-form-grid compact-grid" hidden>
+            <label>
+              游戏与动漫子板块
+              <select id="acgSubsection">
+                <option value="game">游戏灵感</option>
+                <option value="anime">动漫收藏</option>
+                <option value="gear">个人装备</option>
+              </select>
+            </label>
+          </div>
+          <div class="admin-form-grid">
+            <label>
+              Slug
+              <input id="articleSlug" type="text" placeholder="my-first-post" />
+            </label>
+            <label>
+              分类
+              <input id="articleCategory" type="text" placeholder="嵌入式开发" />
+            </label>
+            <label class="wide-field">
+              标题
+              <input id="articleTitle" type="text" />
+            </label>
+            <label class="wide-field">
+              摘要
+              <textarea id="articleSummary" rows="4"></textarea>
+            </label>
+            <label class="wide-field">
+              正文
+              <textarea id="articleContent" class="large-editor" rows="22"></textarea>
+            </label>
+          </div>
+        </section>
+
+        <section id="projectPanel" class="admin-panel glass-card" data-panel="project" hidden>
+          <div class="admin-section-heading">
+            <span class="section-kicker">03 Editor</span>
+            <h2>新增项目</h2>
+            <p>内容只会发布到 SK 的项目实验室区域。</p>
+          </div>
+          <div class="admin-form-grid">
+            <label>
+              项目编号
+              <input id="projectIndex" type="text" placeholder="01 / PLAN / TODO" />
+            </label>
+            <label>
+              技术标签
+              <input id="projectTags" type="text" placeholder="MCU, UART, STM32" />
+            </label>
+            <label class="wide-field">
+              项目标题
+              <input id="projectTitle" type="text" />
+            </label>
+            <label class="wide-field">
+              项目介绍
+              <textarea id="projectCopy" class="large-editor" rows="16"></textarea>
+            </label>
+          </div>
+        </section>
+
+        <section class="admin-panel glass-card">
+          <div class="admin-section-heading">
+            <span class="section-kicker">04 Media</span>
+            <h2>上传图片或视频</h2>
+            <p>可选。媒体会上传到当前内容的专属目录，并自动显示在对应文章或项目中。</p>
+          </div>
+          <label class="media-upload-box">
+            <input id="mediaInput" type="file" accept="image/*,video/*" multiple />
+            <span>选择图片或视频文件</span>
+            <small>支持图片和视频，可一次选择多个文件</small>
+          </label>
+          <div id="mediaPreview" class="admin-media-preview"></div>
+        </section>
+
+        <section class="admin-panel glass-card">
+          <div class="admin-section-heading">
+            <span class="section-kicker">05 Manage</span>
+            <h2>管理已发布文章</h2>
+            <p>选择文章后，可以修改标题、分类、正文和所属板块，也可以删除文章及其媒体文件。</p>
+          </div>
+          <div class="manage-article-layout">
+            <div id="deleteArticleList" class="delete-article-list"></div>
+            <div class="manage-editor-shell">
+              <div id="editArticleForm" class="admin-form-grid manage-article-form" hidden>
+                <label>
+                  所属板块
+                  <select id="editArticleSection">
+                    <option value="dev">SK 的开发笔记</option>
+                    <option value="game">游戏灵感</option>
+                    <option value="anime">动漫收藏</option>
+                    <option value="gear">个人装备</option>
+                  </select>
+                </label>
+                <label>
+                  分类
+                  <input id="editArticleCategory" type="text" />
+                </label>
+                <label class="wide-field">
+                  标题
+                  <input id="editArticleTitle" type="text" />
+                </label>
+                <label class="wide-field">
+                  摘要
+                  <textarea id="editArticleSummary" rows="4"></textarea>
+                </label>
+                <label class="wide-field">
+                  正文
+                  <textarea id="editArticleContent" class="large-editor" rows="18"></textarea>
+                </label>
+              </div>
+              <div class="admin-actions manage-actions">
+                <button id="saveEditedArticle" type="button">保存文章修改并发布</button>
+                <button id="deleteSelectedArticle" type="button" class="danger-btn">删除选中文章并发布</button>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
-      <div id="deleteArticleList" class="delete-article-list"></div>
-      <div id="editArticleForm" class="admin-form-grid manage-article-form" hidden>
-        <label>
-          所属板块
-          <select id="editArticleSection">
-            <option value="dev">SK 的开发笔记</option>
-            <option value="game">游戏灵感</option>
-            <option value="anime">动漫收藏</option>
-            <option value="gear">个人装备</option>
-          </select>
-        </label>
-        <label>
-          分类
-          <input id="editArticleCategory" type="text" />
-        </label>
-        <label class="wide-field">
-          标题
-          <input id="editArticleTitle" type="text" />
-        </label>
-        <label class="wide-field">
-          摘要
-          <textarea id="editArticleSummary" rows="4"></textarea>
-        </label>
-        <label class="wide-field">
-          正文
-          <textarea id="editArticleContent" class="large-editor" rows="18"></textarea>
-        </label>
-      </div>
-      <div class="admin-actions">
-        <button id="saveEditedArticle" type="button">保存文章修改并发布</button>
-        <button id="deleteSelectedArticle" type="button" class="danger-btn">删除选中文章并发布</button>
-      </div>
-    </section>
+    </div>
   </main>
 </body>
 </html>

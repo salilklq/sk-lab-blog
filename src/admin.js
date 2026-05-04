@@ -12,6 +12,12 @@ const projectPanel = document.querySelector("#projectPanel");
 const articlePanelTitle = document.querySelector("#articlePanelTitle");
 const articlePanelHelp = document.querySelector("#articlePanelHelp");
 const acgSubsectionWrap = document.querySelector("#acgSubsectionWrap");
+const adminStats = {
+  articleCount: document.querySelector("#adminArticleCount"),
+  projectCount: document.querySelector("#adminProjectCount"),
+  mediaCount: document.querySelector("#adminMediaCount"),
+  draftMediaCount: document.querySelector("#adminDraftMediaCount")
+};
 
 const fields = {
   articleSlug: document.querySelector("#articleSlug"),
@@ -139,6 +145,14 @@ function syncCounts() {
   }
 
   content.updatedAt = new Date().toISOString();
+  renderAdminStats();
+}
+
+function renderAdminStats() {
+  if (adminStats.articleCount) adminStats.articleCount.textContent = String(content?.articles?.length || 0);
+  if (adminStats.projectCount) adminStats.projectCount.textContent = String(content?.projects?.length || 0);
+  if (adminStats.mediaCount) adminStats.mediaCount.textContent = String(content ? referencedMediaPaths().size : 0);
+  if (adminStats.draftMediaCount) adminStats.draftMediaCount.textContent = String(selectedFiles.length);
 }
 
 function renderDeleteArticleList() {
@@ -292,6 +306,26 @@ async function deleteRepositoryFile(token, path, message) {
   return true;
 }
 
+async function listRepositoryFiles(token, path) {
+  const entry = await getRepositoryFile(token, path);
+  if (!entry) return [];
+  if (!Array.isArray(entry)) return entry.type === "file" ? [entry] : [];
+
+  const files = [];
+  for (const item of entry) {
+    if (item.type === "file") {
+      files.push(item);
+      continue;
+    }
+
+    if (item.type === "dir") {
+      files.push(...await listRepositoryFiles(token, item.path));
+    }
+  }
+
+  return files;
+}
+
 async function deleteArticleMediaFiles(token, article) {
   const media = Array.isArray(article.media) ? article.media : [];
 
@@ -303,6 +337,60 @@ async function deleteArticleMediaFiles(token, article) {
     setStatus(`正在删除媒体 ${index + 1}/${media.length}: ${item.name || item.url}`, "busy");
     await deleteRepositoryFile(token, path, `Delete media for ${article.slug}`);
   }
+}
+
+function referencedMediaPaths() {
+  const paths = new Set();
+  const entries = [
+    ...(content.articles || []),
+    ...(content.projects || [])
+  ];
+
+  entries.forEach((entry) => {
+    const media = Array.isArray(entry.media) ? entry.media : [];
+    media.forEach((item) => {
+      if (item.url?.startsWith("uploads/")) {
+        paths.add(`public/${item.url}`);
+      }
+    });
+  });
+
+  return paths;
+}
+
+function isUploadedMediaPath(path) {
+  return /\.(avif|gif|jpe?g|m4v|mov|mp4|png|svg|webm|webp)$/i.test(path);
+}
+
+async function cleanupUnusedMedia() {
+  const token = tokenInput.value.trim();
+  if (!token) throw new Error("请先输入 GitHub Token。 ");
+  if (!content) await loadContent();
+
+  localStorage.setItem("skLabAdminToken", token);
+  setStatus("正在扫描上传目录...", "busy");
+
+  const uploadDir = content.repo.uploadDir || "public/uploads";
+  const files = await listRepositoryFiles(token, uploadDir);
+  const referenced = referencedMediaPaths();
+  const unusedFiles = files.filter((file) => isUploadedMediaPath(file.path) && !referenced.has(file.path));
+
+  if (!unusedFiles.length) {
+    setStatus("没有发现无引用媒体文件。", "ok");
+    return;
+  }
+
+  const preview = unusedFiles.slice(0, 6).map((file) => file.path.replace(`${uploadDir}/`, "")).join("\n");
+  const more = unusedFiles.length > 6 ? `\n...还有 ${unusedFiles.length - 6} 个文件` : "";
+  if (!confirm(`发现 ${unusedFiles.length} 个无引用媒体文件，确定从仓库删除吗？\n\n${preview}${more}`)) return;
+
+  for (let index = 0; index < unusedFiles.length; index += 1) {
+    const file = unusedFiles[index];
+    setStatus(`正在删除无引用媒体 ${index + 1}/${unusedFiles.length}: ${file.path}`, "busy");
+    await deleteRepositoryFile(token, file.path, `Delete unused media ${file.name || file.path}`);
+  }
+
+  setStatus(`已清理 ${unusedFiles.length} 个无引用媒体文件。GitHub Pages 正在自动部署，通常几十秒后生效。`, "ok");
 }
 
 async function uploadMediaFiles(token, slug) {
@@ -526,6 +614,8 @@ function clearForm() {
 }
 
 function renderMediaPreview() {
+  renderAdminStats();
+
   if (!selectedFiles.length) {
     mediaPreview.innerHTML = "<p>还没有选择媒体文件。</p>";
     return;
@@ -596,6 +686,14 @@ function bindEvents() {
   document.querySelector("#saveEditedArticle").addEventListener("click", async () => {
     try {
       await saveEditedArticle();
+    } catch (error) {
+      setStatus(error.message, "error");
+    }
+  });
+
+  document.querySelector("#cleanupMedia").addEventListener("click", async () => {
+    try {
+      await cleanupUnusedMedia();
     } catch (error) {
       setStatus(error.message, "error");
     }
