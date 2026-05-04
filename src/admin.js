@@ -439,13 +439,6 @@ async function publishContent() {
   if (type === "project") {
     const project = buildProject(media);
     content.projects.unshift(project);
-    addLatestUpdate({
-      type: "project",
-      title: project.title,
-      section: "SK 的项目实验室",
-      date: project.date,
-      displayDate: project.displayDate
-    });
   } else {
     const article = buildArticle(type, media);
     content.articles.unshift(article);
@@ -479,13 +472,7 @@ async function deleteSelectedArticle() {
   localStorage.setItem("skLabAdminToken", token);
   await deleteArticleMediaFiles(token, article);
   content.articles = content.articles.filter((item) => item.slug !== selectedDeleteSlug);
-  addLatestUpdate({
-    type: "delete",
-    title: `删除文章：${article.title}`,
-    section: article.category,
-    date: new Date().toISOString(),
-    displayDate: formatDisplayDate(new Date())
-  });
+  content.latestUpdates = (content.latestUpdates || []).filter((item) => item.title !== article.title);
   syncCounts();
   setStatus("正在删除文章记录并保存...", "busy");
   await saveCurrentContent(token, `Delete article ${article.slug}`);
@@ -512,13 +499,6 @@ async function saveEditedArticle() {
   article.summary = fields.editArticleSummary.value.trim() || fields.editArticleContent.value.trim().slice(0, 120);
   article.content = fields.editArticleContent.value.trim();
 
-  addLatestUpdate({
-    type: "edit",
-    title: `修改文章：${article.title}`,
-    section: article.category,
-    date: new Date().toISOString(),
-    displayDate: formatDisplayDate(new Date())
-  });
   syncCounts();
   setStatus("正在保存文章修改...", "busy");
   await saveCurrentContent(token, `Edit article ${article.slug}`);

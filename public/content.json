@@ -74,36 +74,11 @@
   },
   "projects": [],
   "timelineIntro": {
-    "eyebrow": "Live Status",
-    "title": "当前状态"
+    "eyebrow": "Bulletin",
+    "title": "公告栏"
   },
-  "timeline": [
-    {
-      "label": "实时监测",
-      "title": "正在读取网站最新更新",
-      "copy": "页面会读取 content.json 的更新时间，并尝试从 GitHub 获取最新提交记录。"
-    },
-    {
-      "label": "真实数据",
-      "title": "文章为 1，公开项目为 0，访问统计未接入",
-      "copy": "当前已有 1 篇真实文章，0 个公开项目。访问统计未接入前，不展示虚构阅读量。"
-    }
-  ],
+  "timeline": [],
   "latestUpdates": [
-    {
-      "type": "delete",
-      "title": "删除文章：12",
-      "section": "游戏灵感",
-      "date": "2026-05-04T04:17:20.151Z",
-      "displayDate": "2026.05.04 12:17"
-    },
-    {
-      "type": "article",
-      "title": "12",
-      "section": "游戏灵感",
-      "date": "2026-05-04T04:08:01.704Z",
-      "displayDate": "2026.05.04 12:08"
-    },
     {
       "type": "article",
       "title": "1",

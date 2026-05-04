@@ -304,21 +304,14 @@ function renderHome(content) {
 
   const timeline = document.querySelector("[data-timeline]");
   if (timeline) {
-    const latest = content.latestUpdates?.map((item) => `
+    const articleUpdates = (content.latestUpdates || []).filter((item) => item.type === "article");
+    timeline.innerHTML = articleUpdates.length ? articleUpdates.map((item) => `
       <div class="timeline-item reveal">
-        <span>${escapeHtml(item.section || item.type)}</span>
+        <span>新文章 · ${escapeHtml(item.section || "文章")}</span>
         <h3>${escapeHtml(item.title)}</h3>
-        <p>更新时间：${escapeHtml(item.displayDate || item.date)}</p>
+        <p>发布时间：${escapeHtml(item.displayDate || item.date)}</p>
       </div>
-    `).join("") || "";
-
-    timeline.innerHTML = content.timeline.map((item) => `
-      <div class="timeline-item reveal">
-        <span>${escapeHtml(item.label)}</span>
-        <h3>${escapeHtml(item.title)}</h3>
-        <p>${escapeHtml(item.copy)}</p>
-      </div>
-    `).join("") + latest + `<div class="timeline-item reveal" data-github-status><span>GitHub</span><h3>正在读取最新提交</h3><p>如果网络允许，这里会显示仓库最新更新时间。</p></div>`;
+    `).join("") : `<div class="timeline-item reveal"><span>公告</span><h3>暂无新文章公告</h3><p>发布新文章后会显示在这里。</p></div>`;
   }
 
   setText("[data-interests-eyebrow]", content.interestsIntro.eyebrow);
@@ -393,29 +386,6 @@ function renderArticle(content) {
   if (body) body.innerHTML = `${renderMedia(article.media)}${textToHtml(article.content)}`;
 }
 
-async function renderGitHubStatus(content) {
-  const status = document.querySelector("[data-github-status]");
-  if (!status) return;
-
-  try {
-    const response = await fetch(`https://api.github.com/repos/${content.repo.owner}/${content.repo.name}/commits/${content.repo.branch}`, { cache: "no-store" });
-    if (!response.ok) throw new Error("GitHub API unavailable");
-    const commit = await response.json();
-    const date = new Date(commit.commit.committer.date);
-    status.innerHTML = `
-      <span>GitHub</span>
-      <h3>最新提交：${escapeHtml(commit.commit.message)}</h3>
-      <p>更新时间：${date.toLocaleString("zh-CN")}；提交：${escapeHtml(commit.sha.slice(0, 7))}</p>
-    `;
-  } catch {
-    status.innerHTML = `
-      <span>GitHub</span>
-      <h3>最新提交暂时无法读取</h3>
-      <p>content.json 更新时间：${escapeHtml(content.updatedAt)}</p>
-    `;
-  }
-}
-
 async function loadContent() {
   const urls = [
     new URL("content.json", document.baseURI),
@@ -439,7 +409,6 @@ async function renderContent() {
     const content = await loadContent();
     if (page === "home") renderHome(content);
     if (page === "article") renderArticle(content);
-    if (page === "home") renderGitHubStatus(content);
   } catch (error) {
     console.error(error);
   }
