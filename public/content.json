@@ -23,7 +23,7 @@
   },
   "metrics": [
     {
-      "value": "1",
+      "value": "2",
       "label": "已发布文章"
     },
     {
@@ -49,19 +49,37 @@
   },
   "articles": [
     {
-      "slug": "girl",
+      "slug": "pron",
       "section": "game",
-      "title": "1",
+      "title": "2",
       "category": "游戏灵感",
-      "date": "2026-05-04T04:03:45.322Z",
-      "displayDate": "2026.05.04 12:03",
-      "summary": "1",
-      "content": "1",
+      "date": "2026-05-04T04:07:00.588Z",
+      "displayDate": "2026.05.04 12:07",
+      "summary": "2",
+      "content": "2",
+      "media": [
+        {
+          "type": "image",
+          "name": "optimize_69ec79e20cf28e194a3529da.jpg",
+          "url": "uploads/pron/optimize-69ec79e20cf28e194a3529da-1777867618827.jpg",
+          "alt": "optimize_69ec79e20cf28e194a3529da.jpg"
+        }
+      ]
+    },
+    {
+      "slug": "111",
+      "section": "game",
+      "title": "111",
+      "category": "游戏灵感",
+      "date": "2026-05-04T04:02:11.323Z",
+      "displayDate": "2026.05.04 12:02",
+      "summary": "11",
+      "content": "11",
       "media": [
         {
           "type": "image",
           "name": "屏幕截图 2026-05-02 233231.png",
-          "url": "uploads/girl/屏幕截图-2026-05-02-233231-1777867422983.png",
+          "url": "uploads/111/屏幕截图-2026-05-02-233231-1777867328857.png",
           "alt": "屏幕截图 2026-05-02 233231.png"
         }
       ]
@@ -85,17 +103,24 @@
     },
     {
       "label": "真实数据",
-      "title": "文章为 1，公开项目为 0，访问统计未接入",
-      "copy": "当前已有 1 篇真实文章，0 个公开项目。访问统计未接入前，不展示虚构阅读量。"
+      "title": "文章为 2，公开项目为 0，访问统计未接入",
+      "copy": "当前已有 2 篇真实文章，0 个公开项目。访问统计未接入前，不展示虚构阅读量。"
     }
   ],
   "latestUpdates": [
     {
       "type": "article",
-      "title": "1",
+      "title": "2",
       "section": "游戏灵感",
-      "date": "2026-05-04T04:03:45.322Z",
-      "displayDate": "2026.05.04 12:03"
+      "date": "2026-05-04T04:07:00.588Z",
+      "displayDate": "2026.05.04 12:07"
+    },
+    {
+      "type": "article",
+      "title": "111",
+      "section": "游戏灵感",
+      "date": "2026-05-04T04:02:11.323Z",
+      "displayDate": "2026.05.04 12:02"
     }
   ],
   "interestsIntro": {
@@ -135,5 +160,5 @@
       "SK"
     ]
   },
-  "updatedAt": "2026-05-04T04:03:45.322Z"
+  "updatedAt": "2026-05-04T04:07:00.588Z"
 }
