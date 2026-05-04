@@ -153,11 +153,39 @@
 
     <section class="admin-panel glass-card">
       <div class="admin-section-heading">
-        <h2>删除已有文章</h2>
-        <p>会删除文章记录，并同步删除该文章上传到仓库的图片或视频文件。删除后 GitHub Pages 会自动重新发布。</p>
+        <h2>管理已发布文章</h2>
+        <p>选择一篇已发布文章，可以修改标题、分类、正文和所属板块，也可以删除文章及其媒体文件。</p>
       </div>
       <div id="deleteArticleList" class="delete-article-list"></div>
+      <div id="editArticleForm" class="admin-form-grid manage-article-form" hidden>
+        <label>
+          所属板块
+          <select id="editArticleSection">
+            <option value="dev">SK 的开发笔记</option>
+            <option value="game">游戏灵感</option>
+            <option value="anime">动漫收藏</option>
+            <option value="gear">个人装备</option>
+          </select>
+        </label>
+        <label>
+          分类
+          <input id="editArticleCategory" type="text" />
+        </label>
+        <label class="wide-field">
+          标题
+          <input id="editArticleTitle" type="text" />
+        </label>
+        <label class="wide-field">
+          摘要
+          <textarea id="editArticleSummary" rows="4"></textarea>
+        </label>
+        <label class="wide-field">
+          正文
+          <textarea id="editArticleContent" class="large-editor" rows="18"></textarea>
+        </label>
+      </div>
       <div class="admin-actions">
+        <button id="saveEditedArticle" type="button">保存文章修改并发布</button>
         <button id="deleteSelectedArticle" type="button" class="danger-btn">删除选中文章并发布</button>
       </div>
     </section>

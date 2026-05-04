@@ -1288,6 +1288,12 @@ p::selection {
   grid-template-columns: minmax(0, 420px);
 }
 
+.manage-article-form {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
 .large-editor {
   min-height: 460px !important;
   font-size: 1.02rem;

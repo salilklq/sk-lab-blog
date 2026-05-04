@@ -6,6 +6,7 @@ const commitMessageInput = document.querySelector("#commitMessage");
 const mediaInput = document.querySelector("#mediaInput");
 const mediaPreview = document.querySelector("#mediaPreview");
 const deleteArticleList = document.querySelector("#deleteArticleList");
+const editArticleForm = document.querySelector("#editArticleForm");
 const articlePanel = document.querySelector("#articlePanel");
 const projectPanel = document.querySelector("#projectPanel");
 const articlePanelTitle = document.querySelector("#articlePanelTitle");
@@ -22,7 +23,12 @@ const fields = {
   projectIndex: document.querySelector("#projectIndex"),
   projectTags: document.querySelector("#projectTags"),
   projectTitle: document.querySelector("#projectTitle"),
-  projectCopy: document.querySelector("#projectCopy")
+  projectCopy: document.querySelector("#projectCopy"),
+  editArticleSection: document.querySelector("#editArticleSection"),
+  editArticleCategory: document.querySelector("#editArticleCategory"),
+  editArticleTitle: document.querySelector("#editArticleTitle"),
+  editArticleSummary: document.querySelector("#editArticleSummary"),
+  editArticleContent: document.querySelector("#editArticleContent")
 };
 
 let content = null;
@@ -45,6 +51,11 @@ function getAcgSection() {
 
 function acgSectionTitle(id) {
   return content?.acgSections?.find((section) => section.id === id)?.title || "游戏与动漫频道";
+}
+
+function sectionLabel(id) {
+  if (id === "dev") return "SK 的开发笔记";
+  return acgSectionTitle(id);
 }
 
 function explainGitHubError(message = "") {
@@ -136,6 +147,7 @@ function renderDeleteArticleList() {
   if (!content.articles.length) {
     deleteArticleList.innerHTML = `<p class="empty-mini">当前没有可删除的文章。</p>`;
     selectedDeleteSlug = "";
+    editArticleForm.hidden = true;
     return;
   }
 
@@ -156,8 +168,30 @@ function renderDeleteArticleList() {
   deleteArticleList.querySelectorAll("input[name='deleteArticle']").forEach((input) => {
     input.addEventListener("change", () => {
       selectedDeleteSlug = input.value;
+      renderEditArticleForm();
     });
   });
+
+  renderEditArticleForm();
+}
+
+function selectedArticle() {
+  return content?.articles.find((article) => article.slug === selectedDeleteSlug) || null;
+}
+
+function renderEditArticleForm() {
+  const article = selectedArticle();
+  if (!article) {
+    editArticleForm.hidden = true;
+    return;
+  }
+
+  editArticleForm.hidden = false;
+  fields.editArticleSection.value = article.section || "dev";
+  fields.editArticleCategory.value = article.category || sectionLabel(article.section);
+  fields.editArticleTitle.value = article.title || "";
+  fields.editArticleSummary.value = article.summary || "";
+  fields.editArticleContent.value = article.content || "";
 }
 
 async function loadContent() {
@@ -460,8 +494,50 @@ async function deleteSelectedArticle() {
   setStatus("文章已删除。GitHub Pages 正在自动部署，通常几十秒后生效。", "ok");
 }
 
+async function saveEditedArticle() {
+  const token = tokenInput.value.trim();
+  if (!token) throw new Error("请先输入 GitHub Token。 ");
+  if (!content) await loadContent();
+
+  const article = selectedArticle();
+  if (!article) throw new Error("当前没有选中文章。 ");
+
+  const title = fields.editArticleTitle.value.trim();
+  if (!title) throw new Error("请填写文章标题。 ");
+
+  localStorage.setItem("skLabAdminToken", token);
+  article.section = fields.editArticleSection.value;
+  article.category = fields.editArticleCategory.value.trim() || sectionLabel(article.section);
+  article.title = title;
+  article.summary = fields.editArticleSummary.value.trim() || fields.editArticleContent.value.trim().slice(0, 120);
+  article.content = fields.editArticleContent.value.trim();
+
+  addLatestUpdate({
+    type: "edit",
+    title: `修改文章：${article.title}`,
+    section: article.category,
+    date: new Date().toISOString(),
+    displayDate: formatDisplayDate(new Date())
+  });
+  syncCounts();
+  setStatus("正在保存文章修改...", "busy");
+  await saveCurrentContent(token, `Edit article ${article.slug}`);
+  renderDeleteArticleList();
+  setStatus("文章修改已保存。GitHub Pages 正在自动部署，通常几十秒后生效。", "ok");
+}
+
 function clearForm() {
-  Object.values(fields).forEach((field) => {
+  [
+    fields.articleSlug,
+    fields.articleCategory,
+    fields.articleTitle,
+    fields.articleSummary,
+    fields.articleContent,
+    fields.projectIndex,
+    fields.projectTags,
+    fields.projectTitle,
+    fields.projectCopy
+  ].forEach((field) => {
     field.value = "";
   });
   mediaInput.value = "";
@@ -532,6 +608,14 @@ function bindEvents() {
   document.querySelector("#deleteSelectedArticle").addEventListener("click", async () => {
     try {
       await deleteSelectedArticle();
+    } catch (error) {
+      setStatus(error.message, "error");
+    }
+  });
+
+  document.querySelector("#saveEditedArticle").addEventListener("click", async () => {
+    try {
+      await saveEditedArticle();
     } catch (error) {
       setStatus(error.message, "error");
     }
