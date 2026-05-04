@@ -45,7 +45,7 @@
   "articlesIntro": {
     "eyebrow": "Embedded Notes",
     "title": "SK 的开发笔记",
-    "copy": "这里展示 SK 的嵌入式开发笔记，不展示虚构阅读量。"
+    "copy": "记录电流、代码和现实世界短暂对齐的瞬间。"
   },
   "articles": [
     {
@@ -70,7 +70,7 @@
   "projectsIntro": {
     "eyebrow": "Project Lab",
     "title": "SK 的项目实验室",
-    "copy": "这里展示 SK 公开上传的个人项目和计划，不展示虚构完成度。"
+    "copy": "把零散的想法、工具和仓库收进一间发光的实验舱。"
   },
   "projects": [],
   "timelineIntro": {
@@ -90,7 +90,7 @@
   "interestsIntro": {
     "eyebrow": "Personal Channel",
     "title": "游戏与动漫频道",
-    "copy": "这里不是工作简历，而是 SK 的个人宇宙。这里会发布游戏、动漫和 ACG 灵感文章。"
+    "copy": "这里不是工作简历，而是 SK 的个人宇宙。游戏、动漫和装备灵感会在这里慢慢发光。"
   },
   "acgSections": [
     {

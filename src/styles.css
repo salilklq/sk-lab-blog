@@ -1238,6 +1238,61 @@ p::selection {
   margin: 0 0 1.2em;
 }
 
+.article-body h2,
+.article-body h3,
+.article-body h4 {
+  margin: 1.6em 0 0.7em;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.article-body h2 {
+  font-size: clamp(1.7rem, 4vw, 2.6rem);
+}
+
+.article-body h3 {
+  font-size: clamp(1.35rem, 3vw, 1.9rem);
+}
+
+.article-body ul {
+  margin: 0 0 1.3em;
+  padding-left: 1.25em;
+}
+
+.article-body li {
+  margin: 0.45em 0;
+}
+
+.article-body a {
+  color: var(--green);
+  font-weight: 900;
+}
+
+.article-body code {
+  padding: 0.12em 0.38em;
+  border: 1px solid rgba(0, 229, 255, 0.18);
+  border-radius: 8px;
+  color: #c8ffe5;
+  background: rgba(3, 8, 20, 0.72);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.92em;
+}
+
+.article-body pre {
+  overflow: auto;
+  margin: 0 0 1.4em;
+  padding: 16px;
+  border: 1px solid rgba(85, 255, 182, 0.22);
+  border-radius: 18px;
+  background: rgba(2, 8, 16, 0.78);
+}
+
+.article-body pre code {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
 .media-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -1394,6 +1449,13 @@ p::selection {
   box-shadow: var(--shadow);
 }
 
+.github-project-card {
+  background:
+    radial-gradient(circle at 84% 10%, rgba(85, 255, 182, 0.12), transparent 12rem),
+    radial-gradient(circle at 16% 92%, rgba(0, 229, 255, 0.12), transparent 12rem),
+    var(--glass-strong);
+}
+
 .feature-project {
   grid-row: span 2;
   min-height: 460px;
@@ -1431,6 +1493,28 @@ p::selection {
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 28px;
+}
+
+.markdown-import-box {
+  display: grid;
+  gap: 6px;
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px dashed rgba(85, 255, 182, 0.4);
+  border-radius: 18px;
+  color: var(--green);
+  background: rgba(85, 255, 182, 0.055);
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.markdown-import-box input {
+  display: none;
+}
+
+.markdown-import-box small {
+  color: var(--muted);
+  font-weight: 700;
 }
 
 .timeline {

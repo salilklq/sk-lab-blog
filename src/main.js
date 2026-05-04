@@ -191,6 +191,83 @@ function textToHtml(value = "") {
     .join("");
 }
 
+function inlineMarkdown(value = "") {
+  return escapeHtml(value)
+    .replace(/`([^`]+)`/g, "<code>$1</code>")
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, `<a href="$2" target="_blank" rel="noreferrer">$1</a>`);
+}
+
+function markdownToHtml(value = "") {
+  const lines = value.replace(/\r\n/g, "\n").split("\n");
+  const html = [];
+  let paragraph = [];
+  let list = [];
+  let inCode = false;
+  let code = [];
+
+  const flushParagraph = () => {
+    if (!paragraph.length) return;
+    html.push(`<p>${inlineMarkdown(paragraph.join(" "))}</p>`);
+    paragraph = [];
+  };
+
+  const flushList = () => {
+    if (!list.length) return;
+    html.push(`<ul>${list.map((item) => `<li>${inlineMarkdown(item)}</li>`).join("")}</ul>`);
+    list = [];
+  };
+
+  lines.forEach((line) => {
+    if (line.trim().startsWith("```")) {
+      if (inCode) {
+        html.push(`<pre><code>${escapeHtml(code.join("\n"))}</code></pre>`);
+        code = [];
+        inCode = false;
+      } else {
+        flushParagraph();
+        flushList();
+        inCode = true;
+      }
+      return;
+    }
+
+    if (inCode) {
+      code.push(line);
+      return;
+    }
+
+    const heading = line.match(/^(#{1,3})\s+(.+)$/);
+    if (heading) {
+      flushParagraph();
+      flushList();
+      html.push(`<h${heading[1].length + 1}>${inlineMarkdown(heading[2])}</h${heading[1].length + 1}>`);
+      return;
+    }
+
+    const item = line.match(/^[-*+]\s+(.+)$/);
+    if (item) {
+      flushParagraph();
+      list.push(item[1]);
+      return;
+    }
+
+    if (!line.trim()) {
+      flushParagraph();
+      flushList();
+      return;
+    }
+
+    paragraph.push(line.trim());
+  });
+
+  flushParagraph();
+  flushList();
+  if (inCode) html.push(`<pre><code>${escapeHtml(code.join("\n"))}</code></pre>`);
+
+  return html.join("");
+}
+
 function renderMedia(media = []) {
   if (!media.length) return "";
 
@@ -255,7 +332,7 @@ function renderArticleCommand(article, index = 0) {
 
 function renderArticleCommandCenter(articles) {
   if (!articles.length) {
-    return `<div class="empty-state empty-state-strong glass-card reveal"><span class="empty-code">NO MCU LOG CAPTURED</span><h3>等待下一次调试记录</h3><p>发布“SK 的开发笔记”后，这里会生成最新记录和索引列表。</p></div>`;
+    return `<div class="empty-state empty-state-strong glass-card reveal"><span class="empty-code">NO MCU LOG CAPTURED</span><h3>等待下一次调试记录</h3><p>当某次调试终于留下痕迹，它会在这里成为第一束信号。</p></div>`;
   }
 
   const featured = articles[0];
@@ -279,6 +356,31 @@ function renderArticleCommandCenter(articles) {
   `;
 }
 
+async function loadGitHubProjects(owner = "salilklq") {
+  const response = await fetch(`https://api.github.com/users/${owner}/repos?sort=updated&per_page=12`, { cache: "no-store" }).catch(() => null);
+  if (!response?.ok) return [];
+  const repos = await response.json();
+
+  return repos
+    .filter((repo) => !repo.fork && !repo.archived && repo.name !== "sk-lab-blog")
+    .slice(0, 6);
+}
+
+function renderGitHubProject(repo, index) {
+  const tags = [repo.language, repo.stargazers_count ? `${repo.stargazers_count} stars` : "GitHub", repo.updated_at?.slice(0, 10)]
+    .filter(Boolean);
+
+  return `
+    <article class="project-card github-project-card ${index === 0 ? "feature-project" : ""} reveal" data-tilt>
+      <span class="project-index">${String(index + 1).padStart(2, "0")}</span>
+      <h3>${escapeHtml(repo.name)}</h3>
+      <p>${escapeHtml(repo.description || "这个公开仓库还没有填写描述。")}</p>
+      <div class="tech-stack">${tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}</div>
+      <a class="inline-link" href="${escapeHtml(repo.html_url)}" target="_blank" rel="noreferrer">打开 GitHub 仓库</a>
+    </article>
+  `;
+}
+
 function sectionTitle(content, sectionId) {
   if (sectionId === "dev") return "SK 的开发笔记";
   return content.acgSections?.find((section) => section.id === sectionId)?.title || "文章";
@@ -290,7 +392,7 @@ function renderLatestSignal(content) {
     .slice(0, 4);
 
   if (!articles.length) {
-    return `<div class="empty-state empty-state-strong glass-card reveal"><span class="empty-code">LATEST_SIGNAL = NULL</span><h3>还没有捕获到内容信号</h3><p>发布任意频道文章后，它会优先出现在这里。</p></div>`;
+    return `<div class="empty-state empty-state-strong glass-card reveal"><span class="empty-code">LATEST_SIGNAL = NULL</span><h3>还没有捕获到内容信号</h3><p>此刻频道保持静默，等待下一次灵感点亮屏幕。</p></div>`;
   }
 
   return articles.map((article, index) => `
@@ -401,8 +503,10 @@ function renderHome(content) {
         ${project.tags?.length ? `<div class="tech-stack">${project.tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}</div>` : ""}
         ${renderMedia(project.media)}
       </article>
-    `).join("") : `<div class="empty-state empty-state-strong glass-card reveal"><span class="empty-code">PROJECT BAY EMPTY</span><h3>等待第一个实验项目</h3><p>上传项目后，这里会变成 SK 的硬件和工具陈列舱。</p></div>`;
+    `).join("") : `<div class="empty-state empty-state-strong glass-card reveal"><span class="empty-code">PROJECT SIGNAL SEARCH</span><h3>正在寻找远处的仓库星光</h3><p>稍后这里会浮现 SK 留在 GitHub 上的公开项目轨迹。</p></div>`;
   }
+
+  hydrateGitHubProjects(content);
 
   setText("[data-timeline-eyebrow]", content.timelineIntro.eyebrow);
   setText("[data-timeline-title]", content.timelineIntro.title);
@@ -414,9 +518,9 @@ function renderHome(content) {
       <div class="timeline-item reveal">
         <span>新文章 · ${escapeHtml(item.section || "文章")}</span>
         <h3>${escapeHtml(item.title)}</h3>
-        <p>发布时间：${escapeHtml(item.displayDate || item.date)}</p>
+        <p>记录时间：${escapeHtml(item.displayDate || item.date)}</p>
       </div>
-    `).join("") : `<div class="timeline-item reveal"><span>公告</span><h3>暂无新文章公告</h3><p>发布新文章后会显示在这里。</p></div>`;
+    `).join("") : `<div class="timeline-item reveal"><span>公告</span><h3>暂无新文章公告</h3><p>电波暂时安静，下一条记录会在这里亮起。</p></div>`;
   }
 
   setText("[data-interests-eyebrow]", content.interestsIntro.eyebrow);
@@ -453,6 +557,26 @@ function renderHome(content) {
   }
 }
 
+async function hydrateGitHubProjects(content) {
+  const projectGrid = document.querySelector("[data-project-grid]");
+  if (!projectGrid) return;
+
+  const repos = await loadGitHubProjects(content.repo?.owner || "salilklq");
+  if (repos.length) {
+    const repoCards = repos.map((repo, index) => renderGitHubProject(repo, content.projects.length + index)).join("");
+    if (content.projects.length) {
+      projectGrid.insertAdjacentHTML("beforeend", repoCards);
+    } else {
+      projectGrid.innerHTML = repoCards;
+    }
+  } else if (!content.projects.length) {
+    projectGrid.innerHTML = `<div class="empty-state empty-state-strong glass-card reveal"><span class="empty-code">PROJECT BAY QUIET</span><h3>项目舱暂时安静</h3><p>也许只是信号还没抵达，等下一次刷新再看。</p></div>`;
+  }
+
+  initReveal();
+  initTilt();
+}
+
 function renderArticle(content) {
   updateSiteShell(content);
 
@@ -480,7 +604,7 @@ function renderArticle(content) {
   document.querySelector("[data-article-date]")?.setAttribute("datetime", article.date);
 
   const body = document.querySelector("[data-article-content]");
-  if (body) body.innerHTML = `${renderMedia(article.media)}${textToHtml(article.content)}`;
+  if (body) body.innerHTML = `${renderMedia(article.media)}${article.format === "markdown" ? markdownToHtml(article.content) : textToHtml(article.content)}`;
 }
 
 async function loadContent() {

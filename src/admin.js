@@ -4,6 +4,7 @@ import { requirePasswordAccess } from "./password-gate.js";
 const statusEl = document.querySelector("#adminStatus");
 const tokenInput = document.querySelector("#tokenInput");
 const commitMessageInput = document.querySelector("#commitMessage");
+const markdownInput = document.querySelector("#markdownInput");
 const mediaInput = document.querySelector("#mediaInput");
 const mediaPreview = document.querySelector("#mediaPreview");
 const deleteArticleList = document.querySelector("#deleteArticleList");
@@ -128,6 +129,39 @@ function safeFileName(fileName) {
 
 function mediaType(file) {
   return file.type.startsWith("video/") ? "video" : "image";
+}
+
+function stripMarkdown(value = "") {
+  return value
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, " ")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/^#{1,6}\s+/gm, "")
+    .replace(/^>\s?/gm, "")
+    .replace(/^[-*+]\s+/gm, "")
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/_([^_]+)_/g, "$1")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function importMarkdown(markdown, fileName = "") {
+  const normalized = markdown.replace(/^---[\s\S]*?---\s*/, "").trim();
+  const heading = normalized.match(/^#\s+(.+)$/m);
+  const title = heading?.[1]?.trim() || fileName.replace(/\.(md|markdown)$/i, "") || "Markdown 文档";
+  const body = heading ? normalized.replace(heading[0], "").trim() : normalized;
+  const firstParagraph = body.split(/\n{2,}/).map(stripMarkdown).find(Boolean) || stripMarkdown(body).slice(0, 140);
+
+  fields.articleTitle.value = title;
+  fields.articleSlug.value = toSlug(fields.articleSlug.value || title);
+  fields.articleSummary.value = firstParagraph.slice(0, 160);
+  fields.articleContent.value = normalized;
+  fields.articleContent.dataset.format = "markdown";
+
+  if (!fields.articleCategory.value.trim()) {
+    fields.articleCategory.value = getPublishType() === "acg" ? acgSectionTitle(getAcgSection()) : "SK 的开发笔记";
+  }
 }
 
 function syncCounts() {
@@ -484,6 +518,7 @@ function buildArticle(type, media) {
     displayDate: formatDisplayDate(now),
     summary: fields.articleSummary.value.trim() || contentText.slice(0, 120) || "媒体内容",
     content: contentText,
+    format: fields.articleContent.dataset.format === "markdown" ? "markdown" : "plain",
     media
   };
 }
@@ -587,6 +622,7 @@ async function saveEditedArticle() {
   article.title = title;
   article.summary = fields.editArticleSummary.value.trim() || fields.editArticleContent.value.trim().slice(0, 120);
   article.content = fields.editArticleContent.value.trim();
+  article.format = article.format || "plain";
 
   syncCounts();
   setStatus("正在保存文章修改...", "busy");
@@ -610,6 +646,8 @@ function clearForm() {
     field.value = "";
   });
   mediaInput.value = "";
+  if (markdownInput) markdownInput.value = "";
+  delete fields.articleContent.dataset.format;
   selectedFiles = [];
   renderMediaPreview();
 }
@@ -709,6 +747,18 @@ function bindEvents() {
   mediaInput.addEventListener("change", () => {
     selectedFiles = Array.from(mediaInput.files || []);
     renderMediaPreview();
+  });
+
+  markdownInput?.addEventListener("change", async () => {
+    const file = markdownInput.files?.[0];
+    if (!file) return;
+
+    try {
+      importMarkdown(await file.text(), file.name);
+      setStatus(`已导入 Markdown：${file.name}`, "ok");
+    } catch (error) {
+      setStatus(error.message || "Markdown 导入失败。", "error");
+    }
   });
 }
 
