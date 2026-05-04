@@ -1,4 +1,5 @@
 import "./styles.css";
+import { requirePasswordAccess } from "./password-gate.js";
 
 const canvas = document.querySelector("#particle-canvas");
 const ctx = canvas.getContext("2d");
@@ -427,6 +428,7 @@ function restoreHashPosition() {
 }
 
 async function init() {
+  await requirePasswordAccess();
   await renderContent();
   restoreHashPosition();
   resizeCanvas();

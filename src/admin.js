@@ -1,4 +1,5 @@
 import "./styles.css";
+import { requirePasswordAccess } from "./password-gate.js";
 
 const statusEl = document.querySelector("#adminStatus");
 const tokenInput = document.querySelector("#tokenInput");
@@ -712,6 +713,7 @@ function bindEvents() {
 }
 
 async function initAdmin() {
+  await requirePasswordAccess();
   tokenInput.value = localStorage.getItem("skLabAdminToken") || "";
   bindEvents();
   renderMediaPreview();
