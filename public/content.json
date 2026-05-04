@@ -23,7 +23,7 @@
   },
   "metrics": [
     {
-      "value": "1",
+      "value": "0",
       "label": "已发布文章"
     },
     {
@@ -47,26 +47,7 @@
     "title": "SK 的开发笔记",
     "copy": "这里展示 SK 的嵌入式开发笔记，不展示虚构阅读量。"
   },
-  "articles": [
-    {
-      "slug": "girl",
-      "section": "game",
-      "title": "1",
-      "category": "游戏灵感",
-      "date": "2026-05-04T04:03:45.322Z",
-      "displayDate": "2026.05.04 12:03",
-      "summary": "1",
-      "content": "1",
-      "media": [
-        {
-          "type": "image",
-          "name": "屏幕截图 2026-05-02 233231.png",
-          "url": "uploads/girl/屏幕截图-2026-05-02-233231-1777867422983.png",
-          "alt": "屏幕截图 2026-05-02 233231.png"
-        }
-      ]
-    }
-  ],
+  "articles": [],
   "projectsIntro": {
     "eyebrow": "Project Lab",
     "title": "SK 的项目实验室",
@@ -78,15 +59,7 @@
     "title": "公告栏"
   },
   "timeline": [],
-  "latestUpdates": [
-    {
-      "type": "article",
-      "title": "1",
-      "section": "游戏灵感",
-      "date": "2026-05-04T04:03:45.322Z",
-      "displayDate": "2026.05.04 12:03"
-    }
-  ],
+  "latestUpdates": [],
   "interestsIntro": {
     "eyebrow": "Personal Channel",
     "title": "游戏与动漫频道",
@@ -124,5 +97,5 @@
       "SK"
     ]
   },
-  "updatedAt": "2026-05-04T04:17:20.151Z"
+  "updatedAt": "2026-05-04T04:36:20.604Z"
 }
