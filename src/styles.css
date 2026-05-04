@@ -689,6 +689,24 @@ p::selection {
   margin: 0 0 1.2em;
 }
 
+.media-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin: 18px 0 24px;
+}
+
+.media-grid img,
+.media-grid video {
+  display: block;
+  width: 100%;
+  max-height: 520px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.24);
+  object-fit: cover;
+}
+
 .card-meta {
   display: flex;
   align-items: center;
@@ -725,6 +743,28 @@ p::selection {
   bottom: 24px;
   color: var(--green);
   font-weight: 900;
+}
+
+.inline-link {
+  display: inline-flex;
+  margin-top: 18px;
+  color: var(--green);
+  font-weight: 900;
+}
+
+.card-media-preview {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  margin-top: 12px;
+  padding: 0 10px;
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  border-radius: 999px;
+  color: var(--cyan);
+  background: rgba(0, 229, 255, 0.08);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
 }
 
 .lab-section {
@@ -1030,6 +1070,47 @@ p::selection {
   margin-top: 20px;
 }
 
+.publish-type-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.publish-type-card {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  min-height: 150px;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+}
+
+.publish-type-card input {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  accent-color: var(--cyan);
+}
+
+.publish-type-card strong {
+  padding-right: 32px;
+  font-size: 1.12rem;
+}
+
+.publish-type-card span {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.publish-type-card:has(input:checked) {
+  border-color: rgba(0, 229, 255, 0.65);
+  box-shadow: 0 0 30px rgba(0, 229, 255, 0.14);
+}
+
 .admin-form-grid label {
   display: grid;
   gap: 8px;
@@ -1084,6 +1165,50 @@ p::selection {
   margin-top: 16px;
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   font-size: 0.94rem;
+}
+
+.media-upload-box {
+  display: grid;
+  place-items: center;
+  min-height: 170px;
+  margin-top: 18px;
+  border: 1px dashed rgba(0, 229, 255, 0.46);
+  border-radius: 24px;
+  color: var(--green);
+  background: rgba(0, 229, 255, 0.06);
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.media-upload-box input {
+  display: none;
+}
+
+.admin-media-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.admin-media-preview p,
+.media-preview-item {
+  margin: 0;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.media-preview-item {
+  display: grid;
+  gap: 6px;
+}
+
+.media-preview-item strong {
+  color: var(--text);
+  word-break: break-word;
 }
 
 .admin-status {
@@ -1219,7 +1344,8 @@ p::selection {
 
   .article-grid,
   .interest-grid,
-  .project-layout {
+  .project-layout,
+  .publish-type-grid {
     grid-template-columns: 1fr;
   }
 

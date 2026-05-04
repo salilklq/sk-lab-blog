@@ -30,7 +30,16 @@ npm run preview
 
 ## 管理员模式
 
-默认访客只能查看网站内容。管理员可以打开 `/admin/`，输入 GitHub Token 后在网页端编辑首页文案和文章内容。
+默认访客只能查看网站内容。管理员可以打开 `/admin/`，输入 GitHub Token 后在网页端新增内容。
+
+管理员模式现在只做新增发布：
+
+- 新增 `SK 的开发笔记` 文章
+- 新增 `SK 的项目实验室` 项目
+- 新增 `游戏与动漫频道` 文章
+- 上传图片或视频到 `public/uploads/`
+- 自动更新 `public/content.json`
+- 自动触发 GitHub Pages 部署
 
 Token 建议使用 Fine-grained personal access token：
 
@@ -42,9 +51,22 @@ Token 建议使用 Fine-grained personal access token：
 
 Token 只保存在当前浏览器的 `localStorage`，不会写入仓库。不要把 Token 发给别人，也不要在公共电脑上保存。
 
+## 上传图片和视频
+
+管理员页面支持选择多个图片或视频文件。发布时会把文件提交到仓库的 `public/uploads/<slug>/` 目录，然后自动插入到文章或项目中。
+
+注意：GitHub 仓库不适合存放很大的视频。建议单个视频尽量控制在几十 MB 内；更大的视频建议以后接入对象存储或视频平台。
+
 ## 内容结构
 
 网站内容集中存放在 `public/content.json`。前台首页和文章详情页都会读取这个文件渲染。
+
+当前状态区会显示：
+
+- 文章数量
+- 项目数量
+- 最新内容更新
+- GitHub 最新提交信息
 
 ## 手动写新文章
 

@@ -3,7 +3,8 @@
     "owner": "salilklq",
     "name": "sk-lab-blog",
     "branch": "main",
-    "contentPath": "public/content.json"
+    "contentPath": "public/content.json",
+    "uploadDir": "public/uploads"
   },
   "site": {
     "brand": "SK Lab",
@@ -18,7 +19,7 @@
     "identityTitle": "Embedded Developer",
     "identitySubtitle": "Personal Use / Game / Anime",
     "terminalName": "sk / embedded developer",
-    "terminalStatus": "First article published, more coming soon"
+    "terminalStatus": "Admin publishing is enabled"
   },
   "metrics": [
     {
@@ -44,72 +45,56 @@
   "articlesIntro": {
     "eyebrow": "Embedded Notes",
     "title": "SK 的开发笔记",
-    "copy": "这里展示 SK 已经公开发布的真实文章，不展示虚构阅读量。"
+    "copy": "这里展示 SK 的嵌入式开发笔记，不展示虚构阅读量。"
   },
   "articles": [
     {
       "slug": "test",
+      "section": "acg",
       "title": "test",
       "category": "游戏与动漫频道",
       "date": "2026-05-04T10:49:28+08:00",
       "displayDate": "2026.05.04 10:49",
       "summary": "test",
-      "content": "test"
+      "content": "test",
+      "media": []
     }
   ],
   "projectsIntro": {
     "eyebrow": "Project Lab",
     "title": "SK 的项目实验室",
-    "copy": "当前还没有公开发布的项目。下面是计划方向，不代表已经完成上线。"
+    "copy": "这里展示 SK 公开上传的个人项目和计划，不展示虚构完成度。"
   },
-  "projects": [
-    {
-      "index": "PLAN",
-      "title": "Personal Control Terminal",
-      "copy": "计划中的个人控制终端：连接硬件状态、串口日志、提醒事项和个人数据。当前状态：尚未公开发布。",
-      "tags": ["MCU", "UART", "Planned"],
-      "featured": true
-    },
-    {
-      "index": "TODO",
-      "title": "Debug Archive",
-      "copy": "计划把烧录失败、串口异常、通信错误等问题整理成自己的排错数据库。",
-      "tags": [],
-      "featured": false
-    },
-    {
-      "index": "TODO",
-      "title": "ACG Inspiration Vault",
-      "copy": "计划收集游戏 UI、动漫设定和酷炫交互，为个人项目提供灵感库。",
-      "tags": [],
-      "featured": false
-    }
-  ],
+  "projects": [],
   "timelineIntro": {
-    "eyebrow": "Real Status",
+    "eyebrow": "Live Status",
     "title": "当前状态"
   },
   "timeline": [
     {
-      "label": "现在",
-      "title": "网站正在搭建",
-      "copy": "当前目标是先把 SK 的个人主页按公网发布标准做好。"
+      "label": "实时监测",
+      "title": "正在读取网站最新更新",
+      "copy": "页面会读取 content.json 的更新时间，并尝试从 GitHub 获取最新提交记录。"
     },
     {
       "label": "真实数据",
-      "title": "文章为 1，访问统计未接入",
+      "title": "文章为 1，公开项目为 0，访问统计未接入",
       "copy": "当前已有 1 篇真实文章。访问统计未接入前，不展示虚构阅读量。"
-    },
+    }
+  ],
+  "latestUpdates": [
     {
-      "label": "下一步",
-      "title": "发布第一篇内容",
-      "copy": "后续可以从嵌入式学习笔记、调试记录或游戏动漫灵感开始更新。"
+      "type": "article",
+      "title": "test",
+      "section": "游戏与动漫频道",
+      "date": "2026-05-04T10:49:28+08:00",
+      "displayDate": "2026.05.04 10:49"
     }
   ],
   "interestsIntro": {
     "eyebrow": "Personal Channel",
     "title": "游戏与动漫频道",
-    "copy": "这里不是工作简历，而是 SK 的个人宇宙。硬件负责运行，游戏和动漫负责点燃想象。"
+    "copy": "这里不是工作简历，而是 SK 的个人宇宙。这里会发布游戏、动漫和 ACG 灵感文章。"
   },
   "interests": [
     {

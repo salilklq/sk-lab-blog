@@ -185,6 +185,36 @@ function textToHtml(value = "") {
     .join("");
 }
 
+function renderMedia(media = []) {
+  if (!media.length) return "";
+
+  return `<div class="media-grid">${media.map((item) => {
+    const url = escapeHtml(item.url);
+    const alt = escapeHtml(item.alt || item.name || "媒体文件");
+
+    if (item.type === "video") {
+      return `<video controls preload="metadata" src="${url}"></video>`;
+    }
+
+    return `<img src="${url}" alt="${alt}" loading="lazy" />`;
+  }).join("")}</div>`;
+}
+
+function renderArticleCard(article) {
+  return `
+    <article class="article-card glass-card reveal" data-tilt>
+      <div class="card-meta">
+        <span>${escapeHtml(article.category)}</span>
+        <time datetime="${escapeHtml(article.date)}">${escapeHtml(article.displayDate)}</time>
+      </div>
+      <h3>${escapeHtml(article.title)}</h3>
+      <p>${escapeHtml(article.summary)}</p>
+      ${article.media?.[0] ? `<div class="card-media-preview">${article.media[0].type === "video" ? "VIDEO" : "IMAGE"}</div>` : ""}
+      <a href="article.html?slug=${encodeURIComponent(article.slug)}">阅读全文</a>
+    </article>
+  `;
+}
+
 function updateSiteShell(content) {
   setAllText("[data-site-brand]", content.site.brand);
   setAllText("[data-site-footer]", content.site.footer);
@@ -223,19 +253,10 @@ function renderHome(content) {
 
   const articleGrid = document.querySelector("[data-article-grid]");
   if (articleGrid) {
-    articleGrid.innerHTML = content.articles.length
-      ? content.articles.map((article) => `
-        <article class="article-card glass-card reveal" data-tilt>
-          <div class="card-meta">
-            <span>${escapeHtml(article.category)}</span>
-            <time datetime="${escapeHtml(article.date)}">${escapeHtml(article.displayDate)}</time>
-          </div>
-          <h3>${escapeHtml(article.title)}</h3>
-          <p>${escapeHtml(article.summary)}</p>
-          <a href="article.html?slug=${encodeURIComponent(article.slug)}">阅读全文</a>
-        </article>
-      `).join("")
-      : `<div class="empty-state glass-card reveal"><span class="empty-code">ARTICLE_COUNT = 0</span><h3>暂无公开文章</h3><p>管理员发布第一篇文章后会显示在这里。</p></div>`;
+    const devArticles = content.articles.filter((article) => article.section === "dev");
+    articleGrid.innerHTML = devArticles.length
+      ? devArticles.map(renderArticleCard).join("")
+      : `<div class="empty-state glass-card reveal"><span class="empty-code">DEV_ARTICLE_COUNT = 0</span><h3>暂无开发笔记</h3><p>管理员发布“SK 的开发笔记”后会显示在这里。</p></div>`;
   }
 
   setText("[data-projects-eyebrow]", content.projectsIntro.eyebrow);
@@ -244,14 +265,15 @@ function renderHome(content) {
 
   const projectGrid = document.querySelector("[data-project-grid]");
   if (projectGrid) {
-    projectGrid.innerHTML = content.projects.map((project) => `
-      <article class="project-card ${project.featured ? "feature-project" : ""} reveal" data-tilt>
+    projectGrid.innerHTML = content.projects.length ? content.projects.map((project, index) => `
+      <article class="project-card ${index === 0 ? "feature-project" : ""} reveal" data-tilt>
         <span class="project-index">${escapeHtml(project.index)}</span>
         <h3>${escapeHtml(project.title)}</h3>
         <p>${escapeHtml(project.copy)}</p>
         ${project.tags?.length ? `<div class="tech-stack">${project.tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}</div>` : ""}
+        ${renderMedia(project.media)}
       </article>
-    `).join("");
+    `).join("") : `<div class="empty-state glass-card reveal"><span class="empty-code">PROJECT_COUNT = 0</span><h3>暂无公开项目</h3><p>管理员上传项目后会显示在这里。</p></div>`;
   }
 
   setText("[data-timeline-eyebrow]", content.timelineIntro.eyebrow);
@@ -259,13 +281,21 @@ function renderHome(content) {
 
   const timeline = document.querySelector("[data-timeline]");
   if (timeline) {
+    const latest = content.latestUpdates?.map((item) => `
+      <div class="timeline-item reveal">
+        <span>${escapeHtml(item.section || item.type)}</span>
+        <h3>${escapeHtml(item.title)}</h3>
+        <p>更新时间：${escapeHtml(item.displayDate || item.date)}</p>
+      </div>
+    `).join("") || "";
+
     timeline.innerHTML = content.timeline.map((item) => `
       <div class="timeline-item reveal">
         <span>${escapeHtml(item.label)}</span>
         <h3>${escapeHtml(item.title)}</h3>
         <p>${escapeHtml(item.copy)}</p>
       </div>
-    `).join("");
+    `).join("") + latest + `<div class="timeline-item reveal" data-github-status><span>GitHub</span><h3>正在读取最新提交</h3><p>如果网络允许，这里会显示仓库最新更新时间。</p></div>`;
   }
 
   setText("[data-interests-eyebrow]", content.interestsIntro.eyebrow);
@@ -274,13 +304,24 @@ function renderHome(content) {
 
   const interestGrid = document.querySelector("[data-interest-grid]");
   if (interestGrid) {
-    interestGrid.innerHTML = content.interests.map((interest) => `
+    const acgArticles = content.articles.filter((article) => article.section === "acg");
+    const introCards = content.interests.map((interest) => `
       <article class="interest-card reveal" data-tilt>
         <span class="interest-icon">${escapeHtml(interest.icon)}</span>
         <h3>${escapeHtml(interest.title)}</h3>
         <p>${escapeHtml(interest.copy)}</p>
       </article>
     `).join("");
+    const articleCards = acgArticles.map((article) => `
+      <article class="interest-card reveal" data-tilt>
+        <span class="interest-icon">POST</span>
+        <h3>${escapeHtml(article.title)}</h3>
+        <p>${escapeHtml(article.summary)}</p>
+        ${renderMedia(article.media)}
+        <a class="inline-link" href="article.html?slug=${encodeURIComponent(article.slug)}">阅读全文</a>
+      </article>
+    `).join("");
+    interestGrid.innerHTML = introCards + articleCards;
   }
 
   setText("[data-about-eyebrow]", content.about.eyebrow);
@@ -320,7 +361,30 @@ function renderArticle(content) {
   document.querySelector("[data-article-date]")?.setAttribute("datetime", article.date);
 
   const body = document.querySelector("[data-article-content]");
-  if (body) body.innerHTML = textToHtml(article.content);
+  if (body) body.innerHTML = `${renderMedia(article.media)}${textToHtml(article.content)}`;
+}
+
+async function renderGitHubStatus(content) {
+  const status = document.querySelector("[data-github-status]");
+  if (!status) return;
+
+  try {
+    const response = await fetch(`https://api.github.com/repos/${content.repo.owner}/${content.repo.name}/commits/${content.repo.branch}`, { cache: "no-store" });
+    if (!response.ok) throw new Error("GitHub API unavailable");
+    const commit = await response.json();
+    const date = new Date(commit.commit.committer.date);
+    status.innerHTML = `
+      <span>GitHub</span>
+      <h3>最新提交：${escapeHtml(commit.commit.message)}</h3>
+      <p>更新时间：${date.toLocaleString("zh-CN")}；提交：${escapeHtml(commit.sha.slice(0, 7))}</p>
+    `;
+  } catch {
+    status.innerHTML = `
+      <span>GitHub</span>
+      <h3>最新提交暂时无法读取</h3>
+      <p>content.json 更新时间：${escapeHtml(content.updatedAt)}</p>
+    `;
+  }
 }
 
 async function loadContent() {
@@ -337,6 +401,7 @@ async function renderContent() {
     const content = await loadContent();
     if (page === "home") renderHome(content);
     if (page === "article") renderArticle(content);
+    if (page === "home") renderGitHubStatus(content);
   } catch (error) {
     console.error(error);
   }
