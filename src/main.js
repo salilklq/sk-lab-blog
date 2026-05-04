@@ -87,6 +87,8 @@ function updateProgress() {
 function initReveal() {
   const elements = document.querySelectorAll(".reveal");
 
+  elements.forEach((element) => element.classList.remove("is-visible"));
+
   if (!("IntersectionObserver" in window)) {
     elements.forEach((element) => element.classList.add("is-visible"));
     return;
@@ -108,6 +110,9 @@ function initTilt() {
   const cards = document.querySelectorAll("[data-tilt]");
 
   cards.forEach((card) => {
+    if (card.dataset.tiltReady === "true") return;
+    card.dataset.tiltReady = "true";
+
     card.addEventListener("pointermove", (event) => {
       const rect = card.getBoundingClientRect();
       const x = event.clientX - rect.left;
@@ -388,9 +393,18 @@ async function renderGitHubStatus(content) {
 }
 
 async function loadContent() {
-  const response = await fetch("content.json", { cache: "no-store" });
-  if (!response.ok) throw new Error("content.json 加载失败");
-  return response.json();
+  const urls = [
+    new URL("content.json", document.baseURI),
+    new URL("./content.json", window.location.href),
+    new URL("/sk-lab-blog/content.json", window.location.origin)
+  ];
+
+  for (const url of urls) {
+    const response = await fetch(url, { cache: "no-store" }).catch(() => null);
+    if (response?.ok) return response.json();
+  }
+
+  throw new Error("content.json 加载失败");
 }
 
 async function renderContent() {
@@ -407,8 +421,21 @@ async function renderContent() {
   }
 }
 
+function restoreHashPosition() {
+  const hash = window.location.hash;
+  if (!hash) return;
+
+  const target = document.querySelector(hash);
+  if (!target) return;
+
+  requestAnimationFrame(() => {
+    target.scrollIntoView({ block: "start" });
+  });
+}
+
 async function init() {
   await renderContent();
+  restoreHashPosition();
   resizeCanvas();
   drawParticles();
   initReveal();
