@@ -23,7 +23,7 @@
   },
   "metrics": [
     {
-      "value": "2",
+      "value": "1",
       "label": "已发布文章"
     },
     {
@@ -48,24 +48,6 @@
     "copy": "这里展示 SK 的嵌入式开发笔记，不展示虚构阅读量。"
   },
   "articles": [
-    {
-      "slug": "sad",
-      "section": "game",
-      "title": "12",
-      "category": "游戏灵感",
-      "date": "2026-05-04T04:08:01.704Z",
-      "displayDate": "2026.05.04 12:08",
-      "summary": "1",
-      "content": "333",
-      "media": [
-        {
-          "type": "image",
-          "name": "optimize_69ec79e20cf28e194a3529da.jpg",
-          "url": "uploads/sad/optimize-69ec79e20cf28e194a3529da-1777867679957.jpg",
-          "alt": "optimize_69ec79e20cf28e194a3529da.jpg"
-        }
-      ]
-    },
     {
       "slug": "girl",
       "section": "game",
@@ -103,11 +85,18 @@
     },
     {
       "label": "真实数据",
-      "title": "文章为 2，公开项目为 0，访问统计未接入",
-      "copy": "当前已有 2 篇真实文章，0 个公开项目。访问统计未接入前，不展示虚构阅读量。"
+      "title": "文章为 1，公开项目为 0，访问统计未接入",
+      "copy": "当前已有 1 篇真实文章，0 个公开项目。访问统计未接入前，不展示虚构阅读量。"
     }
   ],
   "latestUpdates": [
+    {
+      "type": "delete",
+      "title": "删除文章：12",
+      "section": "游戏灵感",
+      "date": "2026-05-04T04:16:19.915Z",
+      "displayDate": "2026.05.04 12:16"
+    },
     {
       "type": "article",
       "title": "12",
@@ -160,5 +149,5 @@
       "SK"
     ]
   },
-  "updatedAt": "2026-05-04T04:08:01.704Z"
+  "updatedAt": "2026-05-04T04:16:19.916Z"
 }
