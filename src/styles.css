@@ -710,20 +710,78 @@ p::selection {
 
 .media-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 14px;
-  margin: 18px 0 24px;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  margin: 4px 0 28px;
 }
 
-.media-grid img,
-.media-grid video {
+.media-frame {
+  margin: 0;
+  padding: clamp(10px, 2vw, 16px);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 22px;
+  background: rgba(3, 8, 20, 0.48);
+}
+
+.media-frame img,
+.media-frame video {
   display: block;
   width: 100%;
-  max-height: 520px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  max-height: min(72vh, 760px);
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.26);
+  object-fit: contain;
+}
+
+.media-frame figcaption {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.media-lightbox-trigger {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 16px;
+  background: transparent;
+  cursor: zoom-in;
+}
+
+.media-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  background: rgba(0, 0, 0, 0.86);
+  cursor: zoom-out;
+}
+
+.media-lightbox img {
+  max-width: min(1200px, 96vw);
+  max-height: 90vh;
   border-radius: 18px;
-  background: rgba(0, 0, 0, 0.24);
-  object-fit: cover;
+  object-fit: contain;
+  box-shadow: 0 28px 100px rgba(0, 0, 0, 0.55);
+}
+
+.media-lightbox button {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  width: 46px;
+  height: 46px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 50%;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 1.7rem;
+  cursor: pointer;
 }
 
 .card-meta {

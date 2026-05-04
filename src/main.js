@@ -198,11 +198,29 @@ function renderMedia(media = []) {
     const alt = escapeHtml(item.alt || item.name || "媒体文件");
 
     if (item.type === "video") {
-      return `<video controls preload="metadata" src="${url}"></video>`;
+      return `<figure class="media-frame"><video controls preload="metadata" src="${url}"></video>${item.name ? `<figcaption>${escapeHtml(item.name)}</figcaption>` : ""}</figure>`;
     }
 
-    return `<img src="${url}" alt="${alt}" loading="lazy" />`;
+    return `<figure class="media-frame"><button class="media-lightbox-trigger" type="button" data-fullsrc="${url}" aria-label="放大查看图片"><img src="${url}" alt="${alt}" loading="lazy" /></button>${item.name ? `<figcaption>${escapeHtml(item.name)}</figcaption>` : ""}</figure>`;
   }).join("")}</div>`;
+}
+
+function initMediaLightbox() {
+  document.querySelectorAll(".media-lightbox-trigger").forEach((button) => {
+    if (button.dataset.lightboxReady === "true") return;
+    button.dataset.lightboxReady = "true";
+
+    button.addEventListener("click", () => {
+      const src = button.dataset.fullsrc;
+      if (!src) return;
+
+      const overlay = document.createElement("div");
+      overlay.className = "media-lightbox";
+      overlay.innerHTML = `<button type="button" aria-label="关闭预览">×</button><img src="${src}" alt="" />`;
+      overlay.addEventListener("click", () => overlay.remove());
+      document.body.append(overlay);
+    });
+  });
 }
 
 function renderArticleCard(article) {
@@ -446,6 +464,7 @@ async function init() {
   drawParticles();
   initReveal();
   initTilt();
+  initMediaLightbox();
   initMenu();
   initCursorGlow();
   updateProgress();

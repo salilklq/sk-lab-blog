@@ -5,6 +5,7 @@ const tokenInput = document.querySelector("#tokenInput");
 const commitMessageInput = document.querySelector("#commitMessage");
 const mediaInput = document.querySelector("#mediaInput");
 const mediaPreview = document.querySelector("#mediaPreview");
+const deleteArticleList = document.querySelector("#deleteArticleList");
 const articlePanel = document.querySelector("#articlePanel");
 const projectPanel = document.querySelector("#projectPanel");
 const articlePanelTitle = document.querySelector("#articlePanelTitle");
@@ -27,6 +28,7 @@ const fields = {
 let content = null;
 let remoteSha = null;
 let selectedFiles = [];
+let selectedDeleteSlug = "";
 
 function setStatus(message, type = "") {
   statusEl.textContent = message;
@@ -128,11 +130,42 @@ function syncCounts() {
   content.updatedAt = new Date().toISOString();
 }
 
+function renderDeleteArticleList() {
+  if (!deleteArticleList || !content) return;
+
+  if (!content.articles.length) {
+    deleteArticleList.innerHTML = `<p class="empty-mini">当前没有可删除的文章。</p>`;
+    selectedDeleteSlug = "";
+    return;
+  }
+
+  if (!content.articles.some((article) => article.slug === selectedDeleteSlug)) {
+    selectedDeleteSlug = content.articles[0].slug;
+  }
+
+  deleteArticleList.innerHTML = content.articles.map((article) => `
+    <label class="delete-article-item">
+      <input type="radio" name="deleteArticle" value="${escapeHtml(article.slug)}" ${article.slug === selectedDeleteSlug ? "checked" : ""} />
+      <span>
+        <strong>${escapeHtml(article.title)}</strong>
+        <em>${escapeHtml(article.category)} · ${escapeHtml(article.displayDate)}</em>
+      </span>
+    </label>
+  `).join("");
+
+  deleteArticleList.querySelectorAll("input[name='deleteArticle']").forEach((input) => {
+    input.addEventListener("change", () => {
+      selectedDeleteSlug = input.value;
+    });
+  });
+}
+
 async function loadContent() {
   const response = await fetch("../content.json", { cache: "no-store" });
   if (!response.ok) throw new Error("无法加载 content.json");
   content = await response.json();
   syncCounts();
+  renderDeleteArticleList();
   setStatus("线上内容已加载，可以新增内容。", "ok");
 }
 
@@ -239,6 +272,16 @@ async function saveContentFile(token) {
   remoteSha = result.content.sha;
 }
 
+async function saveCurrentContent(token, message) {
+  const originalMessage = commitMessageInput.value;
+  commitMessageInput.value = message || originalMessage;
+  try {
+    await saveContentFile(token);
+  } finally {
+    commitMessageInput.value = originalMessage;
+  }
+}
+
 function buildArticle(type, media) {
   const now = new Date();
   const title = fields.articleTitle.value.trim();
@@ -327,7 +370,35 @@ async function publishContent() {
   setStatus("正在保存内容索引...", "busy");
   await saveContentFile(token);
   clearForm();
+  renderDeleteArticleList();
   setStatus("发布成功。GitHub Pages 正在自动部署，通常几十秒后生效。", "ok");
+}
+
+async function deleteSelectedArticle() {
+  const token = tokenInput.value.trim();
+  if (!token) throw new Error("请先输入 GitHub Token。 ");
+  if (!content) await loadContent();
+  if (!selectedDeleteSlug) throw new Error("当前没有选中文章。 ");
+
+  const article = content.articles.find((item) => item.slug === selectedDeleteSlug);
+  if (!article) throw new Error("文章不存在，请重新加载线上内容。 ");
+  if (!confirm(`确定删除文章《${article.title}》吗？`)) return;
+
+  localStorage.setItem("skLabAdminToken", token);
+  content.articles = content.articles.filter((item) => item.slug !== selectedDeleteSlug);
+  addLatestUpdate({
+    type: "delete",
+    title: `删除文章：${article.title}`,
+    section: article.category,
+    date: new Date().toISOString(),
+    displayDate: formatDisplayDate(new Date())
+  });
+  syncCounts();
+  setStatus("正在删除文章并保存...", "busy");
+  await saveCurrentContent(token, `Delete article ${article.slug}`);
+  selectedDeleteSlug = "";
+  renderDeleteArticleList();
+  setStatus("文章已删除。GitHub Pages 正在自动部署，通常几十秒后生效。", "ok");
 }
 
 function clearForm() {
@@ -397,6 +468,14 @@ function bindEvents() {
     localStorage.removeItem("skLabAdminToken");
     tokenInput.value = "";
     setStatus("Token 已从当前浏览器清除。", "ok");
+  });
+
+  document.querySelector("#deleteSelectedArticle").addEventListener("click", async () => {
+    try {
+      await deleteSelectedArticle();
+    } catch (error) {
+      setStatus(error.message, "error");
+    }
   });
 
   document.querySelectorAll("input[name='publishType']").forEach((input) => {
