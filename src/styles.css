@@ -2947,8 +2947,95 @@ body.is-locked {
     grid-template-columns: 1fr;
   }
 
+  .password-gate {
+    align-items: start;
+    min-height: 100dvh;
+    padding: max(18px, env(safe-area-inset-top)) 14px max(16px, env(safe-area-inset-bottom));
+    overflow-y: auto;
+  }
+
+  .gate-grid {
+    inset: -120px -80px;
+    background-size: 34px 34px;
+    opacity: 0.22;
+    transform: perspective(560px) rotateX(62deg) translateY(150px);
+  }
+
+  .gate-card {
+    width: 100%;
+    margin-top: clamp(18px, 8vh, 54px);
+    padding: 22px 18px 18px;
+    border-radius: 26px;
+  }
+
+  .gate-orb {
+    width: 78px;
+    height: 78px;
+    margin-bottom: 14px;
+  }
+
+  .gate-orb strong {
+    width: 52px;
+    height: 52px;
+    border-radius: 18px;
+    font-size: 0.95rem;
+  }
+
+  .gate-orb span {
+    inset: 6px;
+  }
+
+  .gate-card h1 {
+    max-width: 280px;
+    font-size: clamp(2rem, 12vw, 3rem);
+    line-height: 0.98;
+  }
+
+  .gate-kicker {
+    margin-bottom: 8px;
+    font-size: 0.68rem;
+  }
+
+  .gate-copy {
+    margin: 12px 0 18px;
+    font-size: 0.95rem;
+    line-height: 1.65;
+  }
+
+  .gate-form {
+    gap: 9px;
+  }
+
+  .gate-form label {
+    font-size: 0.72rem;
+  }
+
+  .gate-input-row input,
+  .gate-input-row button {
+    min-height: 52px;
+  }
+
+  .gate-input-row input {
+    padding: 0 16px;
+    font-size: 1rem;
+    text-align: center;
+  }
+
   .gate-input-row button {
     width: 100%;
+    padding: 0 18px;
+  }
+
+  .gate-error {
+    min-height: 22px;
+    font-size: 0.86rem;
+    text-align: center;
+  }
+
+  .password-gate.is-unlocking::after {
+    padding: 0 18px;
+    font-size: clamp(1.5rem, 10vw, 3.4rem);
+    letter-spacing: 0.1em;
   }
 
   .site-footer {
