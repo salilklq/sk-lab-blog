@@ -49,19 +49,19 @@
   },
   "articles": [
     {
-      "slug": "111",
+      "slug": "girl",
       "section": "game",
-      "title": "111",
+      "title": "1",
       "category": "游戏灵感",
-      "date": "2026-05-04T04:02:11.323Z",
-      "displayDate": "2026.05.04 12:02",
-      "summary": "11",
-      "content": "11",
+      "date": "2026-05-04T04:03:45.322Z",
+      "displayDate": "2026.05.04 12:03",
+      "summary": "1",
+      "content": "1",
       "media": [
         {
           "type": "image",
           "name": "屏幕截图 2026-05-02 233231.png",
-          "url": "uploads/111/屏幕截图-2026-05-02-233231-1777867328857.png",
+          "url": "uploads/girl/屏幕截图-2026-05-02-233231-1777867422983.png",
           "alt": "屏幕截图 2026-05-02 233231.png"
         }
       ]
@@ -92,10 +92,10 @@
   "latestUpdates": [
     {
       "type": "article",
-      "title": "111",
+      "title": "1",
       "section": "游戏灵感",
-      "date": "2026-05-04T04:02:11.323Z",
-      "displayDate": "2026.05.04 12:02"
+      "date": "2026-05-04T04:03:45.322Z",
+      "displayDate": "2026.05.04 12:03"
     }
   ],
   "interestsIntro": {
@@ -135,5 +135,5 @@
       "SK"
     ]
   },
-  "updatedAt": "2026-05-04T04:02:11.323Z"
+  "updatedAt": "2026-05-04T04:03:45.322Z"
 }
