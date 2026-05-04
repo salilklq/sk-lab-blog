@@ -213,6 +213,64 @@ async function putFileToGitHub({ token, path, base64Content, message }) {
   return response.json();
 }
 
+async function getRepositoryFile(token, path) {
+  const { owner, name, branch } = content.repo;
+  const response = await fetch(`https://api.github.com/repos/${owner}/${name}/contents/${path}?ref=${branch}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/vnd.github+json"
+    }
+  });
+
+  if (response.status === 404) return null;
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(explainGitHubError(error.message || `读取 ${path} 失败`));
+  }
+
+  return response.json();
+}
+
+async function deleteRepositoryFile(token, path, message) {
+  const file = await getRepositoryFile(token, path);
+  if (!file?.sha) return false;
+
+  const { owner, name, branch } = content.repo;
+  const response = await fetch(`https://api.github.com/repos/${owner}/${name}/contents/${path}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/vnd.github+json",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      message,
+      sha: file.sha,
+      branch
+    })
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(explainGitHubError(error.message || `删除 ${path} 失败`));
+  }
+
+  return true;
+}
+
+async function deleteArticleMediaFiles(token, article) {
+  const media = Array.isArray(article.media) ? article.media : [];
+
+  for (let index = 0; index < media.length; index += 1) {
+    const item = media[index];
+    if (!item.url?.startsWith("uploads/")) continue;
+
+    const path = `public/${item.url}`;
+    setStatus(`正在删除媒体 ${index + 1}/${media.length}: ${item.name || item.url}`, "busy");
+    await deleteRepositoryFile(token, path, `Delete media for ${article.slug}`);
+  }
+}
+
 async function uploadMediaFiles(token, slug) {
   const files = Array.from(selectedFiles);
   const uploaded = [];
@@ -385,6 +443,7 @@ async function deleteSelectedArticle() {
   if (!confirm(`确定删除文章《${article.title}》吗？`)) return;
 
   localStorage.setItem("skLabAdminToken", token);
+  await deleteArticleMediaFiles(token, article);
   content.articles = content.articles.filter((item) => item.slug !== selectedDeleteSlug);
   addLatestUpdate({
     type: "delete",
@@ -394,7 +453,7 @@ async function deleteSelectedArticle() {
     displayDate: formatDisplayDate(new Date())
   });
   syncCounts();
-  setStatus("正在删除文章并保存...", "busy");
+  setStatus("正在删除文章记录并保存...", "busy");
   await saveCurrentContent(token, `Delete article ${article.slug}`);
   selectedDeleteSlug = "";
   renderDeleteArticleList();
