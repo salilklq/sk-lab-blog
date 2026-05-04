@@ -17,6 +17,8 @@ function randomBetween(min, max) {
 }
 
 function resizeCanvas() {
+  if (!canvas || !ctx) return;
+
   width = window.innerWidth;
   height = window.innerHeight;
   dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -38,6 +40,8 @@ function resizeCanvas() {
 }
 
 function drawParticles() {
+  if (!ctx) return;
+
   ctx.clearRect(0, 0, width, height);
 
   particles.forEach((particle, index) => {
@@ -73,12 +77,21 @@ function drawParticles() {
 }
 
 function updateProgress() {
+  if (!progressBar) return;
+
   const scrollable = document.documentElement.scrollHeight - window.innerHeight;
   const progress = scrollable > 0 ? (window.scrollY / scrollable) * 100 : 0;
   progressBar.style.width = `${progress}%`;
 }
 
 function initReveal() {
+  const elements = document.querySelectorAll(".reveal");
+
+  if (!("IntersectionObserver" in window)) {
+    elements.forEach((element) => element.classList.add("is-visible"));
+    return;
+  }
+
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
@@ -88,7 +101,7 @@ function initReveal() {
     });
   }, { threshold: 0.16 });
 
-  document.querySelectorAll(".reveal").forEach((element) => observer.observe(element));
+  elements.forEach((element) => observer.observe(element));
 }
 
 function initTilt() {
@@ -111,6 +124,8 @@ function initTilt() {
 }
 
 function initMenu() {
+  if (!menuToggle) return;
+
   menuToggle.addEventListener("click", () => {
     const isOpen = document.body.classList.toggle("menu-open");
     menuToggle.setAttribute("aria-expanded", String(isOpen));
@@ -125,6 +140,8 @@ function initMenu() {
 }
 
 function initCursorGlow() {
+  if (!cursorOrb) return;
+
   window.addEventListener("pointermove", (event) => {
     cursorOrb.style.opacity = "1";
     cursorOrb.style.transform = `translate3d(${event.clientX - 160}px, ${event.clientY - 160}px, 0)`;
@@ -135,13 +152,208 @@ function initCursorGlow() {
   });
 }
 
-resizeCanvas();
-drawParticles();
-initReveal();
-initTilt();
-initMenu();
-initCursorGlow();
-updateProgress();
+function setText(selector, value) {
+  const element = document.querySelector(selector);
+  if (element && value !== undefined) element.textContent = value;
+}
+
+function setAllText(selector, value) {
+  document.querySelectorAll(selector).forEach((element) => {
+    element.textContent = value;
+  });
+}
+
+function setMailLinks(email) {
+  document.querySelectorAll("[data-site-email], [data-footer-email]").forEach((link) => {
+    link.href = `mailto:${email}`;
+  });
+}
+
+function escapeHtml(value = "") {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function textToHtml(value = "") {
+  return escapeHtml(value)
+    .split(/\n{2,}/)
+    .map((paragraph) => `<p>${paragraph.replaceAll("\n", "<br />")}</p>`)
+    .join("");
+}
+
+function updateSiteShell(content) {
+  setAllText("[data-site-brand]", content.site.brand);
+  setAllText("[data-site-footer]", content.site.footer);
+  setMailLinks(content.site.email);
+}
+
+function renderHome(content) {
+  updateSiteShell(content);
+
+  setText("[data-hero-eyebrow]", content.hero.eyebrow);
+  setText("[data-hero-title]", content.hero.title);
+  setText("[data-hero-copy]", content.hero.copy);
+  setText("[data-identity-title]", content.hero.identityTitle);
+  setText("[data-identity-subtitle]", content.hero.identitySubtitle);
+  setText("[data-terminal-name]", content.hero.terminalName);
+  setText("[data-terminal-status]", content.hero.terminalStatus);
+
+  const metrics = document.querySelector("[data-metrics]");
+  if (metrics) {
+    metrics.innerHTML = content.metrics.map((metric) => `
+      <div>
+        <strong>${escapeHtml(metric.value)}</strong>
+        <span>${escapeHtml(metric.label)}</span>
+      </div>
+    `).join("");
+  }
+
+  const tags = document.querySelector("[data-tags]");
+  if (tags) {
+    tags.innerHTML = content.tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("");
+  }
+
+  setText("[data-articles-eyebrow]", content.articlesIntro.eyebrow);
+  setText("[data-articles-title]", content.articlesIntro.title);
+  setText("[data-articles-copy]", content.articlesIntro.copy);
+
+  const articleGrid = document.querySelector("[data-article-grid]");
+  if (articleGrid) {
+    articleGrid.innerHTML = content.articles.length
+      ? content.articles.map((article) => `
+        <article class="article-card glass-card reveal" data-tilt>
+          <div class="card-meta">
+            <span>${escapeHtml(article.category)}</span>
+            <time datetime="${escapeHtml(article.date)}">${escapeHtml(article.displayDate)}</time>
+          </div>
+          <h3>${escapeHtml(article.title)}</h3>
+          <p>${escapeHtml(article.summary)}</p>
+          <a href="article.html?slug=${encodeURIComponent(article.slug)}">阅读全文</a>
+        </article>
+      `).join("")
+      : `<div class="empty-state glass-card reveal"><span class="empty-code">ARTICLE_COUNT = 0</span><h3>暂无公开文章</h3><p>管理员发布第一篇文章后会显示在这里。</p></div>`;
+  }
+
+  setText("[data-projects-eyebrow]", content.projectsIntro.eyebrow);
+  setText("[data-projects-title]", content.projectsIntro.title);
+  setText("[data-projects-copy]", content.projectsIntro.copy);
+
+  const projectGrid = document.querySelector("[data-project-grid]");
+  if (projectGrid) {
+    projectGrid.innerHTML = content.projects.map((project) => `
+      <article class="project-card ${project.featured ? "feature-project" : ""} reveal" data-tilt>
+        <span class="project-index">${escapeHtml(project.index)}</span>
+        <h3>${escapeHtml(project.title)}</h3>
+        <p>${escapeHtml(project.copy)}</p>
+        ${project.tags?.length ? `<div class="tech-stack">${project.tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}</div>` : ""}
+      </article>
+    `).join("");
+  }
+
+  setText("[data-timeline-eyebrow]", content.timelineIntro.eyebrow);
+  setText("[data-timeline-title]", content.timelineIntro.title);
+
+  const timeline = document.querySelector("[data-timeline]");
+  if (timeline) {
+    timeline.innerHTML = content.timeline.map((item) => `
+      <div class="timeline-item reveal">
+        <span>${escapeHtml(item.label)}</span>
+        <h3>${escapeHtml(item.title)}</h3>
+        <p>${escapeHtml(item.copy)}</p>
+      </div>
+    `).join("");
+  }
+
+  setText("[data-interests-eyebrow]", content.interestsIntro.eyebrow);
+  setText("[data-interests-title]", content.interestsIntro.title);
+  setText("[data-interests-copy]", content.interestsIntro.copy);
+
+  const interestGrid = document.querySelector("[data-interest-grid]");
+  if (interestGrid) {
+    interestGrid.innerHTML = content.interests.map((interest) => `
+      <article class="interest-card reveal" data-tilt>
+        <span class="interest-icon">${escapeHtml(interest.icon)}</span>
+        <h3>${escapeHtml(interest.title)}</h3>
+        <p>${escapeHtml(interest.copy)}</p>
+      </article>
+    `).join("");
+  }
+
+  setText("[data-about-eyebrow]", content.about.eyebrow);
+  setText("[data-about-title]", content.about.title);
+  setText("[data-about-copy]", content.about.copy);
+
+  const chips = document.querySelector("[data-about-chips]");
+  if (chips) {
+    chips.innerHTML = content.about.chips.map((chip) => `<span>${escapeHtml(chip)}</span>`).join("");
+  }
+}
+
+function renderArticle(content) {
+  updateSiteShell(content);
+
+  const params = new URLSearchParams(window.location.search);
+  const slug = params.get("slug") || content.articles[0]?.slug;
+  const article = content.articles.find((item) => item.slug === slug);
+
+  if (!article) {
+    document.title = "文章不存在 | SK Lab";
+    setText("[data-article-category]", "404");
+    setText("[data-article-title]", "文章不存在");
+    setText("[data-article-date]", "未找到");
+    const body = document.querySelector("[data-article-content]");
+    if (body) body.innerHTML = "<p>没有找到这篇文章，请返回文章列表。</p>";
+    return;
+  }
+
+  document.title = `${article.title} | ${content.site.brand}`;
+  document.querySelector("meta[property='og:title']")?.setAttribute("content", `${article.title} | ${content.site.brand}`);
+  document.querySelector("meta[property='og:description']")?.setAttribute("content", article.summary);
+
+  setText("[data-article-category]", article.category);
+  setText("[data-article-title]", article.title);
+  setText("[data-article-date]", article.displayDate);
+  document.querySelector("[data-article-date]")?.setAttribute("datetime", article.date);
+
+  const body = document.querySelector("[data-article-content]");
+  if (body) body.innerHTML = textToHtml(article.content);
+}
+
+async function loadContent() {
+  const response = await fetch("content.json", { cache: "no-store" });
+  if (!response.ok) throw new Error("content.json 加载失败");
+  return response.json();
+}
+
+async function renderContent() {
+  const page = document.body.dataset.page;
+  if (!page || page === "admin") return;
+
+  try {
+    const content = await loadContent();
+    if (page === "home") renderHome(content);
+    if (page === "article") renderArticle(content);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function init() {
+  await renderContent();
+  resizeCanvas();
+  drawParticles();
+  initReveal();
+  initTilt();
+  initMenu();
+  initCursorGlow();
+  updateProgress();
+}
+
+init();
 
 window.addEventListener("resize", resizeCanvas);
 window.addEventListener("scroll", updateProgress, { passive: true });
