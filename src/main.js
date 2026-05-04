@@ -255,7 +255,7 @@ function renderArticleCommand(article, index = 0) {
 
 function renderArticleCommandCenter(articles) {
   if (!articles.length) {
-    return `<div class="empty-state glass-card reveal"><span class="empty-code">NO SIGNAL CAPTURED</span><h3>暂无开发笔记</h3><p>管理员发布“SK 的开发笔记”后会显示在这里。</p></div>`;
+    return `<div class="empty-state empty-state-strong glass-card reveal"><span class="empty-code">NO MCU LOG CAPTURED</span><h3>等待下一次调试记录</h3><p>发布“SK 的开发笔记”后，这里会生成最新记录和索引列表。</p></div>`;
   }
 
   const featured = articles[0];
@@ -276,6 +276,49 @@ function renderArticleCommandCenter(articles) {
       <div class="command-list-head"><span>NOTE INDEX</span><strong>${articles.length}</strong></div>
       ${list}
     </div>
+  `;
+}
+
+function sectionTitle(content, sectionId) {
+  if (sectionId === "dev") return "SK 的开发笔记";
+  return content.acgSections?.find((section) => section.id === sectionId)?.title || "文章";
+}
+
+function renderLatestSignal(content) {
+  const articles = [...(content.articles || [])]
+    .sort((left, right) => new Date(right.date) - new Date(left.date))
+    .slice(0, 4);
+
+  if (!articles.length) {
+    return `<div class="empty-state empty-state-strong glass-card reveal"><span class="empty-code">LATEST_SIGNAL = NULL</span><h3>还没有捕获到内容信号</h3><p>发布任意频道文章后，它会优先出现在这里。</p></div>`;
+  }
+
+  return articles.map((article, index) => `
+    <a class="latest-signal-card ${index === 0 ? "is-primary" : ""} reveal" href="article.html?slug=${encodeURIComponent(article.slug)}" data-tilt>
+      <span>${escapeHtml(sectionTitle(content, article.section))}</span>
+      <h3>${escapeHtml(article.title)}</h3>
+      <p>${escapeHtml(article.summary)}</p>
+      <time datetime="${escapeHtml(article.date)}">${escapeHtml(article.displayDate)}</time>
+      ${article.media?.[0] ? `<small>${article.media[0].type === "video" ? "VIDEO SIGNAL" : "IMAGE SIGNAL"}</small>` : ""}
+    </a>
+  `).join("");
+}
+
+function renderAcgMediaCard(article) {
+  const firstMedia = article.media?.[0];
+  const mediaLabel = firstMedia?.type === "video" ? "VIDEO" : firstMedia ? "IMAGE" : "TEXT";
+
+  return `
+    <a class="acg-archive-card" href="article.html?slug=${encodeURIComponent(article.slug)}">
+      <div class="archive-preview ${firstMedia?.type === "video" ? "is-video" : ""}">
+        ${firstMedia?.type === "image" ? `<img src="${escapeHtml(firstMedia.url)}" alt="${escapeHtml(firstMedia.alt || firstMedia.name || article.title)}" loading="lazy" />` : `<span>${mediaLabel}</span>`}
+      </div>
+      <div class="archive-info">
+        <time datetime="${escapeHtml(article.date)}">${escapeHtml(article.displayDate)}</time>
+        <h4>${escapeHtml(article.title)}</h4>
+        <p>${escapeHtml(article.summary)}</p>
+      </div>
+    </a>
   `;
 }
 
@@ -321,6 +364,11 @@ function renderHome(content) {
     tags.innerHTML = content.tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("");
   }
 
+  const latestSignal = document.querySelector("[data-latest-signal]");
+  if (latestSignal) {
+    latestSignal.innerHTML = renderLatestSignal(content);
+  }
+
   setText("[data-articles-eyebrow]", content.articlesIntro.eyebrow);
   setText("[data-articles-title]", content.articlesIntro.title);
   setText("[data-articles-copy]", content.articlesIntro.copy);
@@ -345,7 +393,7 @@ function renderHome(content) {
         ${project.tags?.length ? `<div class="tech-stack">${project.tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}</div>` : ""}
         ${renderMedia(project.media)}
       </article>
-    `).join("") : `<div class="empty-state glass-card reveal"><span class="empty-code">PROJECT_COUNT = 0</span><h3>暂无公开项目</h3><p>管理员上传项目后会显示在这里。</p></div>`;
+    `).join("") : `<div class="empty-state empty-state-strong glass-card reveal"><span class="empty-code">PROJECT BAY EMPTY</span><h3>等待第一个实验项目</h3><p>上传项目后，这里会变成 SK 的硬件和工具陈列舱。</p></div>`;
   }
 
   setText("[data-timeline-eyebrow]", content.timelineIntro.eyebrow);
@@ -373,16 +421,8 @@ function renderHome(content) {
     interestGrid.innerHTML = acgSections.map((section) => {
       const posts = content.articles.filter((article) => article.section === section.id);
       const postList = posts.length
-        ? posts.map((article) => `
-          <article class="acg-post-card">
-            <time datetime="${escapeHtml(article.date)}">${escapeHtml(article.displayDate)}</time>
-            <h4>${escapeHtml(article.title)}</h4>
-            <p>${escapeHtml(article.summary)}</p>
-            ${renderMedia(article.media)}
-            <a class="inline-link" href="article.html?slug=${encodeURIComponent(article.slug)}">阅读全文</a>
-          </article>
-        `).join("")
-        : `<p class="empty-mini">这个子板块还没有文章。</p>`;
+        ? posts.map(renderAcgMediaCard).join("")
+        : `<p class="empty-mini">ARCHIVE EMPTY / 这个子板块还没有文章。</p>`;
 
       return `
         <article class="interest-card acg-section-card reveal" data-tilt>

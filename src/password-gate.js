@@ -40,12 +40,13 @@ export function requirePasswordAccess() {
 
       if (input.value === SITE_PASSWORD) {
         sessionStorage.setItem(ACCESS_KEY, "true");
+        gate.dataset.message = "ACCESS GRANTED";
         gate.classList.add("is-unlocking");
         window.setTimeout(() => {
           gate.remove();
           document.body.classList.remove("is-locked");
           resolve();
-        }, 520);
+        }, 840);
         return;
       }
 

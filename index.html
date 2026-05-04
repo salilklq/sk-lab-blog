@@ -65,15 +65,17 @@
           <span class="status-dot"></span>
           <span>PRIVATE LAB ONLINE</span>
         </div>
+        <div class="console-status-row" aria-label="系统状态">
+          <span>BOOTING</span>
+          <span>SIGNAL</span>
+          <span>PRIVATE ACCESS</span>
+        </div>
         <div class="console-core">
           <div class="console-mark">SK</div>
-          <div class="wave-monitor" aria-hidden="true">
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
+          <div class="oscilloscope" aria-hidden="true">
+            <svg viewBox="0 0 420 120" preserveAspectRatio="none">
+              <path d="M0 70 L34 70 L48 28 L70 96 L92 70 L132 70 L146 44 L168 84 L190 70 L232 70 L244 22 L270 100 L294 70 L336 70 L352 50 L370 76 L420 76" />
+            </svg>
           </div>
         </div>
         <div class="console-readout" data-console-readout></div>
@@ -94,21 +96,41 @@
       </div>
       <div class="channel-grid reveal">
         <a class="channel-card embedded-channel" href="#articles" data-tilt>
+          <i aria-hidden="true"></i>
           <span>01 / MCU</span>
           <h3>Embedded Notes</h3>
           <p>驱动、调试、固件、硬件排障记录。</p>
         </a>
         <a class="channel-card project-channel" href="#projects" data-tilt>
+          <i aria-hidden="true"></i>
           <span>02 / BUILD</span>
           <h3>Project Lab</h3>
           <p>个人工具、硬件实验、想法原型。</p>
         </a>
         <a class="channel-card acg-channel" href="#interests" data-tilt>
+          <i aria-hidden="true"></i>
           <span>03 / ARCHIVE</span>
           <h3>Game & Anime</h3>
           <p>游戏灵感、动漫收藏、个人装备档案。</p>
         </a>
       </div>
+    </section>
+
+    <section class="section signal-section" id="latest">
+      <div class="section-heading reveal">
+        <p class="eyebrow"><span></span> Latest Signal</p>
+        <h2>最近捕获的内容信号。</h2>
+        <p>这里汇总所有频道最新发布的文章，先看到最新内容，再进入具体区域。</p>
+      </div>
+      <div class="latest-signal-grid" data-latest-signal></div>
+    </section>
+
+    <section class="section timeline-section command-log-section" id="timeline">
+      <div class="section-heading reveal">
+        <p class="eyebrow"><span></span> <span data-timeline-eyebrow>Real Status</span></p>
+        <h2 data-timeline-title>当前状态</h2>
+      </div>
+      <div class="timeline" data-timeline></div>
     </section>
 
     <section class="section" id="articles">
@@ -127,14 +149,6 @@
         <p data-projects-copy>当前还没有公开发布的项目。下面是计划方向，不代表已经完成上线。</p>
       </div>
       <div class="project-layout" data-project-grid></div>
-    </section>
-
-    <section class="section timeline-section command-log-section" id="timeline">
-      <div class="section-heading reveal">
-        <p class="eyebrow"><span></span> <span data-timeline-eyebrow>Real Status</span></p>
-        <h2 data-timeline-title>当前状态</h2>
-      </div>
-      <div class="timeline" data-timeline></div>
     </section>
 
     <section class="section interests-section" id="interests">
