@@ -623,6 +623,72 @@ p::selection {
   padding: 24px;
 }
 
+.article-page {
+  max-width: 900px;
+  min-height: 100vh;
+  padding-top: 140px;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 42px;
+  margin-bottom: 18px;
+  padding: 0 16px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--green);
+  background: rgba(255, 255, 255, 0.06);
+  font-weight: 900;
+}
+
+.article-hero,
+.article-body {
+  border-radius: var(--radius-lg);
+}
+
+.article-hero {
+  padding: clamp(28px, 6vw, 54px);
+}
+
+.article-hero h1 {
+  margin: 0;
+  font-size: clamp(3rem, 9vw, 6rem);
+  line-height: 0.95;
+  letter-spacing: -0.06em;
+}
+
+.article-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+  color: var(--muted);
+}
+
+.article-info span,
+.article-info time {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.article-body {
+  margin-top: 20px;
+  padding: clamp(26px, 5vw, 46px);
+  color: #d9e8ff;
+  font-size: 1.13rem;
+  line-height: 1.95;
+}
+
+.article-body p {
+  margin: 0 0 1.2em;
+}
+
 .card-meta {
   display: flex;
   align-items: center;
@@ -1015,6 +1081,10 @@ p::selection {
   .hero {
     min-height: auto;
     padding-top: 124px;
+  }
+
+  .article-page {
+    padding-top: 112px;
   }
 
   .hero h1 {
