@@ -23,7 +23,7 @@
   },
   "metrics": [
     {
-      "value": "1",
+      "value": "0",
       "label": "已发布文章"
     },
     {
@@ -47,19 +47,7 @@
     "title": "SK 的开发笔记",
     "copy": "这里展示 SK 的嵌入式开发笔记，不展示虚构阅读量。"
   },
-  "articles": [
-    {
-      "slug": "test",
-      "section": "acg",
-      "title": "test",
-      "category": "游戏与动漫频道",
-      "date": "2026-05-04T10:49:28+08:00",
-      "displayDate": "2026.05.04 10:49",
-      "summary": "test",
-      "content": "test",
-      "media": []
-    }
-  ],
+  "articles": [],
   "projectsIntro": {
     "eyebrow": "Project Lab",
     "title": "SK 的项目实验室",
@@ -78,36 +66,31 @@
     },
     {
       "label": "真实数据",
-      "title": "文章为 1，公开项目为 0，访问统计未接入",
-      "copy": "当前已有 1 篇真实文章。访问统计未接入前，不展示虚构阅读量。"
+      "title": "文章为 0，公开项目为 0，访问统计未接入",
+      "copy": "当前还没有公开文章和项目。访问统计未接入前，不展示虚构阅读量。"
     }
   ],
-  "latestUpdates": [
-    {
-      "type": "article",
-      "title": "test",
-      "section": "游戏与动漫频道",
-      "date": "2026-05-04T10:49:28+08:00",
-      "displayDate": "2026.05.04 10:49"
-    }
-  ],
+  "latestUpdates": [],
   "interestsIntro": {
     "eyebrow": "Personal Channel",
     "title": "游戏与动漫频道",
     "copy": "这里不是工作简历，而是 SK 的个人宇宙。这里会发布游戏、动漫和 ACG 灵感文章。"
   },
-  "interests": [
+  "acgSections": [
     {
+      "id": "game",
       "icon": "GAME",
       "title": "游戏灵感",
       "copy": "关注 HUD、装备系统、状态反馈和沉浸式交互，把这些设计语言迁移到个人工具里。"
     },
     {
+      "id": "anime",
       "icon": "ANIME",
       "title": "动漫收藏",
       "copy": "记录喜欢的角色、场景、台词和视觉风格，构建属于自己的 ACG 灵感档案。"
     },
     {
+      "id": "gear",
       "icon": "DIY",
       "title": "个人装备",
       "copy": "未来可以放键盘、开发板、桌面设备、调试工具和一切让自己更顺手的装备。"

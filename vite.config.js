@@ -13,8 +13,7 @@ export default defineConfig({
       input: {
         main: resolve(root, "index.html"),
         article: resolve(root, "article.html"),
-        admin: resolve(root, "admin/index.html"),
-        test: resolve(root, "articles/test.html")
+        admin: resolve(root, "admin/index.html")
       }
     }
   }

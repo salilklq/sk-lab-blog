@@ -5,6 +5,11 @@ const tokenInput = document.querySelector("#tokenInput");
 const commitMessageInput = document.querySelector("#commitMessage");
 const mediaInput = document.querySelector("#mediaInput");
 const mediaPreview = document.querySelector("#mediaPreview");
+const articlePanel = document.querySelector("#articlePanel");
+const projectPanel = document.querySelector("#projectPanel");
+const articlePanelTitle = document.querySelector("#articlePanelTitle");
+const articlePanelHelp = document.querySelector("#articlePanelHelp");
+const acgSubsectionWrap = document.querySelector("#acgSubsectionWrap");
 
 const fields = {
   articleSlug: document.querySelector("#articleSlug"),
@@ -12,6 +17,7 @@ const fields = {
   articleTitle: document.querySelector("#articleTitle"),
   articleSummary: document.querySelector("#articleSummary"),
   articleContent: document.querySelector("#articleContent"),
+  acgSubsection: document.querySelector("#acgSubsection"),
   projectIndex: document.querySelector("#projectIndex"),
   projectTags: document.querySelector("#projectTags"),
   projectTitle: document.querySelector("#projectTitle"),
@@ -29,6 +35,22 @@ function setStatus(message, type = "") {
 
 function getPublishType() {
   return document.querySelector("input[name='publishType']:checked")?.value || "dev";
+}
+
+function getAcgSection() {
+  return fields.acgSubsection.value || "game";
+}
+
+function acgSectionTitle(id) {
+  return content?.acgSections?.find((section) => section.id === id)?.title || "游戏与动漫频道";
+}
+
+function explainGitHubError(message = "") {
+  if (message.includes("Resource not accessible by personal access token") || message.includes("403")) {
+    return "Token 权限不足：请重新生成 Fine-grained Token，只授权 salilklq/sk-lab-blog，并把 Repository permissions 里的 Contents 设置为 Read and write。";
+  }
+
+  return message;
 }
 
 function toSlug(value) {
@@ -123,7 +145,10 @@ async function loadRemoteSha(token) {
     }
   });
 
-  if (!response.ok) throw new Error("无法读取 content.json，请检查 Token 的 Contents 权限。 ");
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(explainGitHubError(error.message || "无法读取 content.json，请检查 Token 的 Contents 权限。"));
+  }
 
   const file = await response.json();
   remoteSha = file.sha;
@@ -149,7 +174,7 @@ async function putFileToGitHub({ token, path, base64Content, message }) {
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
-    throw new Error(error.message || `上传 ${path} 失败`);
+    throw new Error(explainGitHubError(error.message || `上传 ${path} 失败`));
   }
 
   return response.json();
@@ -207,7 +232,7 @@ async function saveContentFile(token) {
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
-    throw new Error(error.message || "保存 content.json 失败");
+    throw new Error(explainGitHubError(error.message || "保存 content.json 失败"));
   }
 
   const result = await response.json();
@@ -223,11 +248,14 @@ function buildArticle(type, media) {
   if (!contentText && !media.length) throw new Error("请填写文章正文，或至少上传一个图片/视频。 ");
 
   const slug = toSlug(fields.articleSlug.value || title);
+  const section = type === "acg" ? getAcgSection() : "dev";
+  const defaultCategory = type === "acg" ? acgSectionTitle(section) : "SK 的开发笔记";
+
   return {
     slug,
-    section: type,
+    section,
     title,
-    category: fields.articleCategory.value.trim() || (type === "dev" ? "SK 的开发笔记" : "游戏与动漫频道"),
+    category: fields.articleCategory.value.trim() || defaultCategory,
     date: now.toISOString(),
     displayDate: formatDisplayDate(now),
     summary: fields.articleSummary.value.trim() || contentText.slice(0, 120) || "媒体内容",
@@ -289,7 +317,7 @@ async function publishContent() {
     addLatestUpdate({
       type: "article",
       title: article.title,
-      section: type === "dev" ? "SK 的开发笔记" : "游戏与动漫频道",
+      section: type === "dev" ? "SK 的开发笔记" : acgSectionTitle(article.section),
       date: article.date,
       displayDate: article.displayDate
     });
@@ -327,8 +355,24 @@ function renderMediaPreview() {
 
 function updateTypeDefaults() {
   const type = getPublishType();
-  if (type === "dev") fields.articleCategory.value = fields.articleCategory.value || "SK 的开发笔记";
-  if (type === "acg") fields.articleCategory.value = fields.articleCategory.value || "游戏与动漫频道";
+  const isProject = type === "project";
+  articlePanel.hidden = isProject;
+  projectPanel.hidden = !isProject;
+  acgSubsectionWrap.hidden = type !== "acg";
+
+  if (type === "dev") {
+    articlePanelTitle.textContent = "新增开发笔记";
+    articlePanelHelp.textContent = "内容只会发布到 SK 的开发笔记区域。";
+    fields.articleCategory.placeholder = "嵌入式开发 / 调试记录 / MCU";
+    fields.articleCategory.value = "";
+  }
+
+  if (type === "acg") {
+    articlePanelTitle.textContent = "新增游戏与动漫文章";
+    articlePanelHelp.textContent = "内容只会发布到游戏与动漫频道，且会归入你选择的子板块。";
+    fields.articleCategory.placeholder = acgSectionTitle(getAcgSection());
+    fields.articleCategory.value = "";
+  }
 }
 
 function bindEvents() {
@@ -358,6 +402,8 @@ function bindEvents() {
   document.querySelectorAll("input[name='publishType']").forEach((input) => {
     input.addEventListener("change", updateTypeDefaults);
   });
+
+  fields.acgSubsection.addEventListener("change", updateTypeDefaults);
 
   mediaInput.addEventListener("change", () => {
     selectedFiles = Array.from(mediaInput.files || []);

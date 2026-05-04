@@ -309,24 +309,30 @@ function renderHome(content) {
 
   const interestGrid = document.querySelector("[data-interest-grid]");
   if (interestGrid) {
-    const acgArticles = content.articles.filter((article) => article.section === "acg");
-    const introCards = content.interests.map((interest) => `
-      <article class="interest-card reveal" data-tilt>
-        <span class="interest-icon">${escapeHtml(interest.icon)}</span>
-        <h3>${escapeHtml(interest.title)}</h3>
-        <p>${escapeHtml(interest.copy)}</p>
-      </article>
-    `).join("");
-    const articleCards = acgArticles.map((article) => `
-      <article class="interest-card reveal" data-tilt>
-        <span class="interest-icon">POST</span>
-        <h3>${escapeHtml(article.title)}</h3>
-        <p>${escapeHtml(article.summary)}</p>
-        ${renderMedia(article.media)}
-        <a class="inline-link" href="article.html?slug=${encodeURIComponent(article.slug)}">阅读全文</a>
-      </article>
-    `).join("");
-    interestGrid.innerHTML = introCards + articleCards;
+    const acgSections = content.acgSections || [];
+    interestGrid.innerHTML = acgSections.map((section) => {
+      const posts = content.articles.filter((article) => article.section === section.id);
+      const postList = posts.length
+        ? posts.map((article) => `
+          <article class="acg-post-card">
+            <time datetime="${escapeHtml(article.date)}">${escapeHtml(article.displayDate)}</time>
+            <h4>${escapeHtml(article.title)}</h4>
+            <p>${escapeHtml(article.summary)}</p>
+            ${renderMedia(article.media)}
+            <a class="inline-link" href="article.html?slug=${encodeURIComponent(article.slug)}">阅读全文</a>
+          </article>
+        `).join("")
+        : `<p class="empty-mini">这个子板块还没有文章。</p>`;
+
+      return `
+        <article class="interest-card acg-section-card reveal" data-tilt>
+          <span class="interest-icon">${escapeHtml(section.icon)}</span>
+          <h3>${escapeHtml(section.title)}</h3>
+          <p>${escapeHtml(section.copy)}</p>
+          <div class="acg-post-list">${postList}</div>
+        </article>
+      `;
+    }).join("");
   }
 
   setText("[data-about-eyebrow]", content.about.eyebrow);

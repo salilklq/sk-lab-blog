@@ -20,8 +20,8 @@
   <main class="admin-shell">
     <section class="admin-hero glass-card">
       <p class="eyebrow"><span></span> Admin Publish Mode</p>
-      <h1>只负责新增内容。</h1>
-      <p>默认访客只能查看网页。管理员输入 GitHub Token 后，可以新增开发笔记、游戏动漫文章、项目，并上传图片或视频到网站。</p>
+      <h1>选择板块，然后新增内容。</h1>
+      <p>三个区域严格隔离。选择开发笔记只显示文章表单；选择项目实验室只显示项目表单；选择游戏与动漫频道只显示该频道文章表单和子板块选择。</p>
       <div class="admin-links">
         <a href="../index.html">返回网站</a>
         <a href="https://github.com/settings/tokens?type=beta" target="_blank" rel="noreferrer">创建 GitHub Token</a>
@@ -31,7 +31,7 @@
     <section class="admin-panel glass-card">
       <div class="admin-section-heading">
         <h2>发布权限</h2>
-        <p>建议使用 Fine-grained token，只授权 `salilklq/sk-lab-blog`，权限选择 Contents: Read and write。Token 只保存在当前浏览器。</p>
+        <p>如果保存时报 `Resource not accessible by personal access token`，说明 Token 没有授权到这个仓库，或没有 Contents: Read and write 权限。请重新生成 Fine-grained Token。</p>
       </div>
       <div class="admin-form-grid">
         <label>
@@ -53,32 +53,42 @@
 
     <section class="admin-panel glass-card">
       <div class="admin-section-heading">
-        <h2>新增到哪个板块</h2>
-        <p>开发笔记和游戏动漫会作为文章发布；项目实验室会作为项目卡片发布。</p>
+        <h2>选择发布区域</h2>
+        <p>选择后，下方只显示当前区域可以新增的内容。</p>
       </div>
       <div class="publish-type-grid" role="radiogroup" aria-label="发布类型">
         <label class="publish-type-card">
           <input type="radio" name="publishType" value="dev" checked />
           <strong>SK 的开发笔记</strong>
-          <span>发布嵌入式、调试、学习笔记文章</span>
+          <span>只发布嵌入式、调试、学习笔记文章。</span>
         </label>
         <label class="publish-type-card">
           <input type="radio" name="publishType" value="project" />
           <strong>SK 的项目实验室</strong>
-          <span>上传个人项目、硬件实验、工具作品</span>
+          <span>只发布个人项目、硬件实验、工具作品。</span>
         </label>
         <label class="publish-type-card">
           <input type="radio" name="publishType" value="acg" />
           <strong>游戏与动漫频道</strong>
-          <span>发布游戏、动漫、ACG 灵感文章</span>
+          <span>只发布游戏、动漫、个人装备文章。</span>
         </label>
       </div>
     </section>
 
-    <section class="admin-panel glass-card">
+    <section id="articlePanel" class="admin-panel glass-card" data-panel="article">
       <div class="admin-section-heading">
-        <h2>新增文章</h2>
-        <p>适用于“SK 的开发笔记”和“游戏与动漫频道”。正文编辑区已扩大，支持换行；空行会渲染成段落。</p>
+        <h2 id="articlePanelTitle">新增开发笔记</h2>
+        <p id="articlePanelHelp">内容会发布到 SK 的开发笔记区域。</p>
+      </div>
+      <div id="acgSubsectionWrap" class="admin-form-grid compact-grid" hidden>
+        <label>
+          游戏与动漫子板块
+          <select id="acgSubsection">
+            <option value="game">游戏灵感</option>
+            <option value="anime">动漫收藏</option>
+            <option value="gear">个人装备</option>
+          </select>
+        </label>
       </div>
       <div class="admin-form-grid">
         <label>
@@ -87,7 +97,7 @@
         </label>
         <label>
           分类
-          <input id="articleCategory" type="text" placeholder="嵌入式开发 / 游戏与动漫频道" />
+          <input id="articleCategory" type="text" placeholder="嵌入式开发" />
         </label>
         <label class="wide-field">
           标题
@@ -104,10 +114,10 @@
       </div>
     </section>
 
-    <section class="admin-panel glass-card">
+    <section id="projectPanel" class="admin-panel glass-card" data-panel="project" hidden>
       <div class="admin-section-heading">
         <h2>新增项目</h2>
-        <p>适用于“SK 的项目实验室”。如果当前选择的不是项目板块，发布时会忽略这里。</p>
+        <p>内容只会发布到 SK 的项目实验室区域。</p>
       </div>
       <div class="admin-form-grid">
         <label>
@@ -124,7 +134,7 @@
         </label>
         <label class="wide-field">
           项目介绍
-          <textarea id="projectCopy" class="large-editor" rows="14"></textarea>
+          <textarea id="projectCopy" class="large-editor" rows="16"></textarea>
         </label>
       </div>
     </section>
@@ -132,7 +142,7 @@
     <section class="admin-panel glass-card">
       <div class="admin-section-heading">
         <h2>上传图片或视频</h2>
-        <p>可选。支持常见图片和视频文件。文件会提交到 `public/uploads/`，然后自动插入到文章或项目中。</p>
+        <p>可选。媒体会上传到当前内容的专属目录，并自动显示在对应文章或项目中。</p>
       </div>
       <label class="media-upload-box">
         <input id="mediaInput" type="file" accept="image/*,video/*" multiple />

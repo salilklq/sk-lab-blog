@@ -36,10 +36,18 @@ npm run preview
 
 - 新增 `SK 的开发笔记` 文章
 - 新增 `SK 的项目实验室` 项目
-- 新增 `游戏与动漫频道` 文章
+- 新增 `游戏与动漫频道` 文章，并选择子板块：游戏灵感、动漫收藏、个人装备
 - 上传图片或视频到 `public/uploads/`
 - 自动更新 `public/content.json`
 - 自动触发 GitHub Pages 部署
+
+三个区域严格隔离，选择某个区域后管理员页面只显示该区域可填写的表单。
+
+如果保存时报 `Resource not accessible by personal access token`，说明 Token 没有正确授权到仓库，或没有 Contents 写权限。重新生成 Fine-grained Token，并确认：
+
+- Repository access 选择 `Only select repositories`
+- 只勾选 `salilklq/sk-lab-blog`
+- Repository permissions 里 `Contents` 设置为 `Read and write`
 
 Token 建议使用 Fine-grained personal access token：
 

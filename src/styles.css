@@ -52,6 +52,10 @@ a {
   text-decoration: none;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 button,
 a {
   -webkit-tap-highlight-color: transparent;
@@ -954,6 +958,51 @@ p::selection {
   line-height: 1.75;
 }
 
+.acg-section-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.acg-post-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.acg-post-card,
+.empty-mini {
+  position: relative;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.acg-post-card h4,
+.acg-post-card p,
+.empty-mini {
+  margin: 0;
+}
+
+.acg-post-card time {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--green);
+  font-size: 0.8rem;
+  font-weight: 900;
+}
+
+.acg-post-card h4 {
+  font-size: 1.05rem;
+}
+
+.acg-post-card p,
+.empty-mini {
+  margin-top: 8px;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
 .about-card {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 340px;
@@ -1139,6 +1188,7 @@ p::selection {
 
 .admin-form-grid input,
 .admin-form-grid textarea,
+.admin-form-grid select,
 .json-editor {
   width: 100%;
   border: 1px solid rgba(156, 210, 255, 0.24);
@@ -1155,6 +1205,11 @@ p::selection {
   padding: 0 14px;
 }
 
+.admin-form-grid select {
+  min-height: 48px;
+  padding: 0 14px;
+}
+
 .admin-form-grid textarea,
 .json-editor {
   min-height: 130px;
@@ -1165,9 +1220,14 @@ p::selection {
 
 .admin-form-grid input:focus,
 .admin-form-grid textarea:focus,
+.admin-form-grid select:focus,
 .json-editor:focus {
   border-color: rgba(0, 229, 255, 0.74);
   box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.14);
+}
+
+.compact-grid {
+  grid-template-columns: minmax(0, 420px);
 }
 
 .large-editor {
