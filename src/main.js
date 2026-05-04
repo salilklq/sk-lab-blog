@@ -88,8 +88,6 @@ function updateProgress() {
 function initReveal() {
   const elements = document.querySelectorAll(".reveal");
 
-  elements.forEach((element) => element.classList.remove("is-visible"));
-
   if (!("IntersectionObserver" in window)) {
     elements.forEach((element) => element.classList.add("is-visible"));
     return;
@@ -357,28 +355,210 @@ function renderArticleCommandCenter(articles) {
 }
 
 async function loadGitHubProjects(owner = "salilklq") {
-  const response = await fetch(`https://api.github.com/users/${owner}/repos?sort=updated&per_page=12`, { cache: "no-store" }).catch(() => null);
+  const response = await fetch(`https://api.github.com/users/${owner}/repos?sort=updated&per_page=100`, { cache: "no-store" }).catch(() => null);
   if (!response?.ok) return [];
   const repos = await response.json();
 
   return repos
-    .filter((repo) => !repo.fork && !repo.archived && repo.name !== "sk-lab-blog")
-    .slice(0, 6);
+    .filter((repo) => repo.name !== "sk-lab-blog");
+}
+
+async function loadRepositoryReadme(repo) {
+  const response = await fetch(`https://api.github.com/repos/${repo.owner.login}/${repo.name}/readme`, { cache: "no-store" }).catch(() => null);
+  if (!response?.ok) return "";
+  const data = await response.json();
+  if (!data.content) return "";
+
+  try {
+    const binary = atob(data.content.replace(/\s/g, ""));
+    const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+    return new TextDecoder().decode(bytes);
+  } catch {
+    return "";
+  }
+}
+
+function repositoryStatus(repo) {
+  if (repo.archived) return "ARCHIVED TRACE";
+  const days = (Date.now() - new Date(repo.updated_at).getTime()) / 86400000;
+  if (days <= 30) return "ACTIVE SIGNAL";
+  if (days <= 180) return "STABLE ORBIT";
+  return "ARCHIVED TRACE";
+}
+
+function projectGroup(repo) {
+  if (repo.fork || repo.archived) return "Archive";
+  const text = `${repo.name} ${repo.description || ""} ${repo.language || ""}`.toLowerCase();
+  if (/firmware|embedded|mcu|stm32|esp32|arduino|driver|hardware|c\b|c\+\+/.test(text)) return "Firmware";
+  if (/tool|cli|web|vite|react|vue|node|javascript|typescript|python/.test(text)) return "Web / Tools";
+  if (/demo|lab|test|experiment|prototype/.test(text)) return "Experiment";
+  return "Archive";
+}
+
+function repoInitials(name = "") {
+  return name
+    .split(/[-_\s]+/)
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 3)
+    .toUpperCase() || "SK";
+}
+
+function readmeCover(markdown = "", repo) {
+  const match = markdown.match(/!\[[^\]]*\]\(([^)]+)\)/);
+  const src = match?.[1]?.trim();
+  if (!src) return "";
+  if (/^https?:\/\//i.test(src)) return src;
+  if (src.startsWith("#")) return "";
+
+  const path = src.replace(/^\.\//, "");
+  return `https://raw.githubusercontent.com/${repo.full_name}/${repo.default_branch}/${path}`;
+}
+
+function languageTone(language = "") {
+  const tones = {
+    JavaScript: "#f7df1e",
+    TypeScript: "#3178c6",
+    Python: "#55ffb6",
+    C: "#00e5ff",
+    "C++": "#8a5cff",
+    HTML: "#ff7a55",
+    CSS: "#ff3df2"
+  };
+
+  return tones[language] || "#00e5ff";
+}
+
+function readmeSummary(markdown = "") {
+  return markdown
+    .replace(/^---[\s\S]*?---\s*/, "")
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
+    .replace(/\[[^\]]*badge[^\]]*\]\([^)]*\)/gi, "")
+    .split(/\n{2,}/)
+    .map((block) => block.replace(/^#{1,6}\s+/gm, "").trim())
+    .map((block) => block.replace(/\[([^\]]+)\]\([^)]*\)/g, "$1").replace(/[`*_>#-]/g, "").trim())
+    .find((block) => block.length > 40)
+    ?.slice(0, 360) || "README 还没有留下足够的说明，像一间还没开灯的项目舱。";
+}
+
+function renderGitHubDashboard(repos) {
+  const totalStars = repos.reduce((sum, repo) => sum + repo.stargazers_count, 0);
+  const latest = repos[0]?.updated_at?.slice(0, 10) || "WAITING";
+  const languages = repos.reduce((map, repo) => {
+    if (repo.language) map.set(repo.language, (map.get(repo.language) || 0) + 1);
+    return map;
+  }, new Map());
+  const primaryLanguage = [...languages.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] || "Mixed";
+
+  return `
+    <div class="github-lab-card glass-card reveal">
+      <span>PUBLIC REPOS</span>
+      <strong>${repos.length}</strong>
+    </div>
+    <div class="github-lab-card glass-card reveal">
+      <span>PRIMARY LANGUAGE</span>
+      <strong>${escapeHtml(primaryLanguage)}</strong>
+    </div>
+    <div class="github-lab-card glass-card reveal">
+      <span>TOTAL STARS</span>
+      <strong>${totalStars}</strong>
+    </div>
+    <div class="github-lab-card glass-card reveal">
+      <span>LAST SIGNAL</span>
+      <strong>${escapeHtml(latest)}</strong>
+    </div>
+  `;
 }
 
 function renderGitHubProject(repo, index) {
-  const tags = [repo.language, repo.stargazers_count ? `${repo.stargazers_count} stars` : "GitHub", repo.updated_at?.slice(0, 10)]
+  const group = projectGroup(repo);
+  const status = repositoryStatus(repo);
+  const tone = languageTone(repo.language);
+  const tags = [repo.language, `${repo.stargazers_count} stars`, `${repo.forks_count} forks`, repo.updated_at?.slice(0, 10)]
     .filter(Boolean);
 
   return `
-    <article class="project-card github-project-card ${index === 0 ? "feature-project" : ""} reveal" data-tilt>
+    <button class="project-card github-project-card ${index === 0 ? "feature-project" : ""} reveal" type="button" data-repo-full-name="${escapeHtml(repo.full_name)}" data-tilt style="--repo-tone: ${escapeHtml(tone)}">
       <span class="project-index">${String(index + 1).padStart(2, "0")}</span>
+      <div class="repo-radar" aria-hidden="true"><i></i></div>
+      <div class="repo-cover" aria-hidden="true"><span>${escapeHtml(repoInitials(repo.name))}</span></div>
+      <small class="repo-group">${escapeHtml(group)} / ${escapeHtml(status)}</small>
       <h3>${escapeHtml(repo.name)}</h3>
       <p>${escapeHtml(repo.description || "这个公开仓库还没有填写描述。")}</p>
       <div class="tech-stack">${tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}</div>
-      <a class="inline-link" href="${escapeHtml(repo.html_url)}" target="_blank" rel="noreferrer">打开 GitHub 仓库</a>
-    </article>
+    </button>
   `;
+}
+
+function renderGitHubProjectGroups(repos, startIndex = 0) {
+  const order = ["Firmware", "Web / Tools", "Experiment", "Archive"];
+  let index = startIndex;
+
+  return order.map((group) => {
+    const groupRepos = repos.filter((repo) => projectGroup(repo) === group);
+    if (!groupRepos.length) return "";
+
+    const cards = groupRepos.map((repo) => renderGitHubProject(repo, index++)).join("");
+    return `
+      <section class="project-group-panel reveal">
+        <div class="project-group-heading">
+          <span>${escapeHtml(group)}</span>
+          <strong>${groupRepos.length}</strong>
+        </div>
+        <div class="project-group-grid">${cards}</div>
+      </section>
+    `;
+  }).join("");
+}
+
+function bindProjectCards(repos) {
+  const repoMap = new Map(repos.map((repo) => [repo.full_name, repo]));
+  document.querySelectorAll("[data-repo-full-name]").forEach((card) => {
+    if (card.dataset.bound === "true") return;
+    card.dataset.bound = "true";
+    card.addEventListener("click", () => {
+      const repo = repoMap.get(card.dataset.repoFullName);
+      if (repo) openProjectDialog(repo);
+    });
+  });
+}
+
+async function openProjectDialog(repo) {
+  const overlay = document.createElement("div");
+  overlay.className = "project-dialog";
+  overlay.innerHTML = `
+    <div class="project-dialog-card glass-card" role="dialog" aria-modal="true" aria-label="项目详情">
+      <button class="project-dialog-close" type="button" aria-label="关闭项目详情">×</button>
+      <span class="feature-kicker">${escapeHtml(projectGroup(repo))} / ${escapeHtml(repositoryStatus(repo))}</span>
+      <h2>${escapeHtml(repo.name)}</h2>
+      <p>${escapeHtml(repo.description || "这间项目舱还没有写下入口说明。")}</p>
+      <div class="project-dialog-stats">
+        <span>${escapeHtml(repo.language || "Mixed")}</span>
+        <span>${repo.stargazers_count} stars</span>
+        <span>${repo.forks_count} forks</span>
+        <span>${escapeHtml(repo.updated_at?.slice(0, 10) || "unknown")}</span>
+      </div>
+      <div class="project-dialog-cover" aria-hidden="true"><span>${escapeHtml(repoInitials(repo.name))}</span></div>
+      <div class="project-readme"><p>正在读取 README 信号...</p></div>
+      <a class="primary-btn" href="${escapeHtml(repo.html_url)}" target="_blank" rel="noreferrer">查看源码</a>
+    </div>
+  `;
+
+  overlay.addEventListener("click", (event) => {
+    if (event.target === overlay) overlay.remove();
+  });
+  overlay.querySelector(".project-dialog-close").addEventListener("click", () => overlay.remove());
+  document.body.append(overlay);
+
+  const readme = await loadRepositoryReadme(repo);
+  const cover = readmeCover(readme, repo);
+  const coverEl = overlay.querySelector(".project-dialog-cover");
+  if (cover && coverEl) {
+    coverEl.innerHTML = `<img src="${escapeHtml(cover)}" alt="" loading="lazy" />`;
+  }
+
+  const target = overlay.querySelector(".project-readme");
+  if (target) target.innerHTML = `<h3>README 摘要</h3><p>${escapeHtml(readmeSummary(readme))}</p>`;
 }
 
 function sectionTitle(content, sectionId) {
@@ -559,11 +739,14 @@ function renderHome(content) {
 
 async function hydrateGitHubProjects(content) {
   const projectGrid = document.querySelector("[data-project-grid]");
+  const dashboard = document.querySelector("[data-github-dashboard]");
   if (!projectGrid) return;
 
   const repos = await loadGitHubProjects(content.repo?.owner || "salilklq");
+  if (dashboard) dashboard.innerHTML = repos.length ? renderGitHubDashboard(repos) : "";
+
   if (repos.length) {
-    const repoCards = repos.map((repo, index) => renderGitHubProject(repo, content.projects.length + index)).join("");
+    const repoCards = renderGitHubProjectGroups(repos, content.projects.length);
     if (content.projects.length) {
       projectGrid.insertAdjacentHTML("beforeend", repoCards);
     } else {
@@ -575,6 +758,7 @@ async function hydrateGitHubProjects(content) {
 
   initReveal();
   initTilt();
+  bindProjectCards(repos);
 }
 
 function renderArticle(content) {

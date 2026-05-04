@@ -1440,20 +1440,150 @@ p::selection {
   gap: 20px;
 }
 
+.github-lab-dashboard {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 18px;
+}
+
+.github-lab-card {
+  min-height: 112px;
+  padding: 18px;
+  border-radius: 22px;
+}
+
+.github-lab-card span,
+.repo-group {
+  display: block;
+  color: var(--cyan);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+}
+
+.github-lab-card strong {
+  display: block;
+  margin-top: 18px;
+  font-size: clamp(1.6rem, 4vw, 2.6rem);
+  line-height: 1;
+}
+
 .project-card {
+  position: relative;
+  display: block;
+  width: 100%;
   padding: 26px;
   border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text);
   background:
     radial-gradient(circle at 80% 12%, rgba(0, 229, 255, 0.18), transparent 13rem),
     var(--glass-strong);
   box-shadow: var(--shadow);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
 }
 
 .github-project-card {
   background:
-    radial-gradient(circle at 84% 10%, rgba(85, 255, 182, 0.12), transparent 12rem),
+    radial-gradient(circle at 84% 10%, color-mix(in srgb, var(--repo-tone, #00e5ff) 24%, transparent), transparent 12rem),
     radial-gradient(circle at 16% 92%, rgba(0, 229, 255, 0.12), transparent 12rem),
     var(--glass-strong);
+}
+
+.project-group-panel {
+  display: grid;
+  gap: 14px;
+  grid-column: 1 / -1;
+}
+
+.project-group-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 4px;
+}
+
+.project-group-heading span {
+  color: var(--green);
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.project-group-heading strong {
+  color: var(--cyan);
+  font-size: 1.3rem;
+}
+
+.project-group-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.repo-radar {
+  position: absolute;
+  top: 22px;
+  right: 22px;
+  display: grid;
+  place-items: center;
+  width: 82px;
+  height: 82px;
+  border: 1px solid color-mix(in srgb, var(--repo-tone, #00e5ff) 44%, transparent);
+  border-radius: 50%;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 14px 14px;
+}
+
+.repo-radar i {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--repo-tone, var(--cyan));
+  box-shadow: 0 0 24px var(--repo-tone, var(--cyan));
+}
+
+.repo-cover {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 150px;
+  margin: 22px 0 18px;
+  border: 1px solid color-mix(in srgb, var(--repo-tone, #00e5ff) 34%, transparent);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 50% 30%, color-mix(in srgb, var(--repo-tone, #00e5ff) 20%, transparent), transparent 9rem),
+    linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    rgba(3, 8, 20, 0.46);
+  background-size: auto, 22px 22px, 22px 22px, auto;
+  overflow: hidden;
+}
+
+.repo-cover span {
+  color: var(--repo-tone, var(--cyan));
+  font-size: clamp(2rem, 6vw, 4rem);
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-shadow: 0 0 30px color-mix(in srgb, var(--repo-tone, #00e5ff) 55%, transparent);
+}
+
+.repo-group {
+  position: relative;
+  margin-top: 0;
+}
+
+.github-project-card h3 {
+  position: relative;
+  padding-right: 80px;
 }
 
 .feature-project {
@@ -1493,6 +1623,115 @@ p::selection {
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 28px;
+}
+
+.project-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(18px);
+}
+
+.project-dialog-card {
+  position: relative;
+  width: min(900px, 100%);
+  max-height: min(86vh, 820px);
+  overflow: auto;
+  padding: clamp(24px, 5vw, 42px);
+  border-radius: 30px;
+}
+
+.project-dialog-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.project-dialog-card h2 {
+  max-width: 760px;
+  margin: 42px 0 14px;
+  font-size: clamp(2.2rem, 7vw, 5rem);
+  line-height: 0.95;
+  letter-spacing: -0.06em;
+}
+
+.project-dialog-card p {
+  color: var(--muted);
+  line-height: 1.78;
+}
+
+.project-dialog-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 24px 0;
+}
+
+.project-dialog-cover {
+  display: grid;
+  place-items: center;
+  min-height: 220px;
+  margin: 22px 0;
+  border: 1px solid rgba(0, 229, 255, 0.18);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 50% 35%, rgba(0, 229, 255, 0.14), transparent 13rem),
+    linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    rgba(3, 8, 20, 0.45);
+  background-size: auto, 26px 26px, 26px 26px, auto;
+  overflow: hidden;
+}
+
+.project-dialog-cover span {
+  color: var(--cyan);
+  font-size: clamp(2.4rem, 10vw, 6rem);
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.project-dialog-cover img {
+  width: 100%;
+  max-height: 420px;
+  object-fit: cover;
+}
+
+.project-dialog-stats span {
+  min-height: 34px;
+  padding: 7px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 999px;
+  color: #cde9ff;
+  background: rgba(255, 255, 255, 0.05);
+  font-weight: 800;
+}
+
+.project-readme {
+  margin: 20px 0 24px;
+  padding: 18px;
+  border: 1px solid rgba(0, 229, 255, 0.14);
+  border-radius: 20px;
+  background: rgba(3, 8, 20, 0.42);
+}
+
+.project-readme h3 {
+  margin: 0 0 10px;
+}
+
+.project-readme p {
+  margin: 0;
 }
 
 .markdown-import-box {
@@ -2760,6 +2999,8 @@ body.is-locked {
   .article-grid,
   .interest-grid,
   .project-layout,
+  .project-group-grid,
+  .github-lab-dashboard,
   .publish-type-grid,
   .channel-grid {
     grid-template-columns: 1fr;
@@ -2776,6 +3017,10 @@ body.is-locked {
   .feature-project {
     grid-row: auto;
     min-height: 360px;
+  }
+
+  .github-project-card h3 {
+    padding-right: 0;
   }
 
   .admin-article-list {
@@ -3025,6 +3270,32 @@ body.is-locked {
   .media-grid img,
   .media-grid video {
     max-height: 360px;
+  }
+
+  .github-lab-card {
+    min-height: 92px;
+  }
+
+  .repo-radar {
+    width: 58px;
+    height: 58px;
+  }
+
+  .repo-cover {
+    min-height: 120px;
+  }
+
+  .project-dialog {
+    padding: 14px;
+  }
+
+  .project-dialog-card {
+    max-height: 88vh;
+    border-radius: 24px;
+  }
+
+  .project-dialog-cover {
+    min-height: 170px;
   }
 
   .gate-input-row {
