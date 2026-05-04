@@ -23,7 +23,7 @@
   },
   "metrics": [
     {
-      "value": "0",
+      "value": "1",
       "label": "已发布文章"
     },
     {
@@ -47,7 +47,26 @@
     "title": "SK 的开发笔记",
     "copy": "这里展示 SK 的嵌入式开发笔记，不展示虚构阅读量。"
   },
-  "articles": [],
+  "articles": [
+    {
+      "slug": "test",
+      "section": "anime",
+      "title": "dm",
+      "category": "动漫收藏",
+      "date": "2026-05-04T04:38:42.792Z",
+      "displayDate": "2026.05.04 12:38",
+      "summary": "dm",
+      "content": "dm",
+      "media": [
+        {
+          "type": "image",
+          "name": "屏幕截图 2026-04-25 003019.png",
+          "url": "uploads/test/屏幕截图-2026-04-25-003019-1777869518854.png",
+          "alt": "屏幕截图 2026-04-25 003019.png"
+        }
+      ]
+    }
+  ],
   "projectsIntro": {
     "eyebrow": "Project Lab",
     "title": "SK 的项目实验室",
@@ -59,7 +78,15 @@
     "title": "公告栏"
   },
   "timeline": [],
-  "latestUpdates": [],
+  "latestUpdates": [
+    {
+      "type": "article",
+      "title": "dm",
+      "section": "动漫收藏",
+      "date": "2026-05-04T04:38:42.792Z",
+      "displayDate": "2026.05.04 12:38"
+    }
+  ],
   "interestsIntro": {
     "eyebrow": "Personal Channel",
     "title": "游戏与动漫频道",
@@ -97,5 +124,5 @@
       "SK"
     ]
   },
-  "updatedAt": "2026-05-04T04:36:20.604Z"
+  "updatedAt": "2026-05-04T04:38:42.792Z"
 }
